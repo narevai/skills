@@ -1,10 +1,10 @@
 ---
 name: narev-update-llm-pricing
-description: 'Applied Pricing API workflows: Use the listing endpoint (and field semantics from lookup-llm-pricing) to snapshot live model pricing into a checked-in file so billing or cost math can run offline with deterministic rates. Use for any language or stack (TypeScript, Python, Go, JSON registries, etc.) — not only @ai-billing/core. Use when the user wants pinned prices, wants to remove a runtime dependency on the Narev API, wants to refresh a committed pricing file, or mentions "snapshot pricing", "freeze prices", "pin model rates", "regenerate pricing file", "update pricing in the repo", or "sync token pricing from Narev".'
+description: 'Update LLM prices in the repo: Use this skill to snapshot live LLM pricing into a checked-in file so billing or cost math can run offline with deterministic rates. Use for any language or stack (TypeScript, Python, Go, JSON registries, etc.) — not only typescript. Use when the user wants pinned prices, wants to remove a runtime dependency on the Narev API, wants to refresh a committed pricing file, or mentions "snapshot pricing", "freeze prices", "pin model rates", "regenerate pricing file", "update pricing in the repo", or "sync token pricing from Narev".'
 license: MIT
 metadata:
-  author: narev
-  version: "1.1"
+  author: narevai
+  version: "1.1.0"
   docs: https://www.narev.ai/docs/platform/api-reference/endpoint/pricing/list-model-pricing
   skill_group: pricing
 ---

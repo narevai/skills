@@ -10,7 +10,9 @@ description:
   site. Automatically routes to the specific skill or documentation path based on their task.
 license: MIT
 metadata:
-  version: 1.0.0
+  author: narevai
+  version: "1.1.0"
+  skill_group: core
 ---
 
 # Narev Skills Router
