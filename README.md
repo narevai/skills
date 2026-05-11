@@ -88,7 +88,8 @@ Example prompts:
 ├── assets/
 │   └── narev-logo.png
 ├── skills/
-│   ├── narev/                         # Router skill
+│   ├── core/
+│   │   └── narev/                     # Router skill
 │   └── pricing/
 │       ├── narev-lookup-llm-pricing/
 │       └── narev-update-llm-pricing/

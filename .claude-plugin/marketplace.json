@@ -10,6 +10,15 @@
   },
   "plugins": [
     {
+      "name": "narev",
+      "description": "Router skill — picks the right Narev skill or documentation path",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/core/narev"
+      ]
+    },
+    {
       "name": "pricing",
       "description": "Narev Cloud Pricing API: lookup (reference) and update (snapshot) skills",
       "source": "./",

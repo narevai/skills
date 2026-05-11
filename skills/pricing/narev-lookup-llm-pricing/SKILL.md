@@ -1,10 +1,10 @@
 ---
 name: narev-lookup-llm-pricing
-description: 'Pricing API reference: Document and use the Narev Cloud Pricing API — list model pricing (GET) and calculate call cost (POST). Use when the user needs endpoint behavior, parameters, responses, or errors; real-time per-token rates; token-to-USD math for one call; or when they mention "Narev pricing", "model rates", "USD per token", "cost calculation", or "AI unit economics". For committing catalog snapshots or generator scripts, use update-llm-pricing.'
+description: 'Current LLM prices. How to use the Narev API endpoints — list model pricing (GET) and calculate call cost (POST). Use when the user needs endpoint behavior, parameters, responses, or errors; real-time per-token rates; token-to-USD math for one call; or when they mention "Narev pricing", "model rates", "USD per token", "cost calculation", or "AI unit economics". For committing catalog snapshots or generator scripts, use update-llm-pricing.'
 license: MIT
 metadata:
-  author: narev
-  version: "1.0"
+  author: narevai
+  version: "1.1.0"
   docs: https://www.narev.ai/docs/platform/api-reference/introduction
   skill_group: pricing
 ---
