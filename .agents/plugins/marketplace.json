@@ -1,0 +1,20 @@
+{
+  "name": "narev",
+  "interface": {
+    "displayName": "Narev"
+  },
+  "plugins": [
+    {
+      "name": "narev-skills",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/narevai/skills.git"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Coding"
+    }
+  ]
+}

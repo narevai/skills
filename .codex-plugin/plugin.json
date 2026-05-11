@@ -1,0 +1,42 @@
+{
+  "name": "narev-skills",
+  "version": "1.0.0",
+  "description": "Official Narev skills for AI coding agents.",
+  "author": {
+    "name": "Narev",
+    "email": "ai@narev.ai",
+    "url": "https://narev.ai"
+  },
+  "homepage": "https://narev.ai",
+  "repository": "https://github.com/narevai/skills",
+  "license": "MIT",
+  "keywords": [
+    "narev",
+    "usage-based-billing",
+    "token-based-billing",
+    "stripe",
+    "polar",
+    "openmeter"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Narev",
+    "shortDescription": "Usage-based billing with Narev",
+    "longDescription": "Official Narev skills bundle for AI coding agents. Includes a router skill plus framework-specific patterns (Next.js, React, Vue, Nuxt, Astro, TanStack Start, Expo, React Router, Chrome Extension) and feature skills (organizations, billing, webhooks, testing).",
+    "developerName": "Narev",
+    "category": "Coding",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://narev.ai",
+    "defaultPrompt": [
+      "Add usage-based AI billing to my Next.js app with Narev",
+      "Meter LLM tokens and charge customers with Stripe via Narev",
+      "Snapshot live model pricing from Narev into a file in my repo"
+    ],
+    "brandColor": "#60a5fa",
+    "composerIcon": "./assets/narev-logo.png",
+    "logo": "./assets/narev-logo.png"
+  }
+}
