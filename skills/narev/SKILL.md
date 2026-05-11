@@ -1,7 +1,7 @@
 ---
 name: narev
 description:
-  Narev router. Use when the user asks about Narev Cloud, the Pricing API, model pricing
+  Start Here. Use when the user asks about Narev Cloud, the Pricing API, model pricing
   (API reference skill vs applied workflows on top of that API), live LLM pricing, token costs,
   cost calculation, pinning or snapshotting model rates, Narev SDK,
   @ai-billing/core, provider middleware packages, Vercel AI SDK billing, usage-based billing,

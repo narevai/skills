@@ -10,8 +10,17 @@
   },
   "plugins": [
     {
+      "name": "core",
+      "description": "Start here. Chooses the right skill or documentation path for Narev",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/core/narev"
+      ]
+    },
+    {
       "name": "pricing",
-      "description": "Narev Cloud Pricing API: lookup (reference) and update (snapshot) skills",
+      "description": "Narev Pricing API: lookup and update skills",
       "source": "./",
       "strict": false,
       "skills": [
