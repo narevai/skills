@@ -1,0 +1,77 @@
+{
+  "skill_name": "narev-lookup-llm-pricing",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "what's the current input and output token price for gpt-4o on openai? i need usd per million tokens for a slide deck",
+      "expected_output": "GET https://www.narev.ai/api/models/pricing with model_id and provider filters; explain rates are USD per token; convert to per-million for display",
+      "files": [],
+      "expectations": [
+        "Uses GET https://www.narev.ai/api/models/pricing (or equivalent path /api/models/pricing)",
+        "Filters with model_id=gpt-4o and provider=openai",
+        "States that Narev returns USD per token (not per 1K or 1M)",
+        "References price_prompt and price_completion (or equivalent input/output fields) from the response",
+        "Multiplies per-token rates by 1_000_000 (or divides appropriately) when giving USD per million tokens"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "i have 1200 prompt tokens and 400 completion tokens on claude-sonnet-4 from anthropic. how much did that one call cost in usd?",
+      "expected_output": "POST /api/models/pricing/calculate with modelId, provider, usage integers including zeros for unused categories; report costBreakdown.total",
+      "files": [],
+      "expectations": [
+        "Uses POST https://www.narev.ai/api/models/pricing/calculate",
+        "Includes Content-Type: application/json",
+        "Sets modelId to a plausible Claude Sonnet 4 id and provider to anthropic",
+        "Includes usage with promptTokens 1200, completionTokens 400, and explicit 0 for cacheReadTokens, cacheWriteTokens, reasoningTokens (or states all required integers must be present)",
+        "Interprets or describes the 200 response using costBreakdown.total (and optionally pricing breakdown)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "i'm calling the narev pricing calculate api for llama-3.1-70b and keep getting errors. i'm only sending modelId and provider meta",
+      "expected_output": "Explain subprovider is required when multiple hosts exist; recommend listing first then POST with correct subprovider",
+      "files": [],
+      "expectations": [
+        "Mentions that the same model_id can differ by host (e.g. bedrock, openrouter, together)",
+        "Recommends GET /api/models/pricing to discover valid provider/subprovider combinations",
+        "States that calculate requests need subprovider when the model is served by multiple subproviders",
+        "Does not claim an API key is required for these public endpoints"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "my calculate request returns 400. my body only has promptTokens and completionTokens in usage",
+      "expected_output": "400 from usage validation; all usage integer fields required; pass 0 for unused categories, not null or omitted",
+      "files": [],
+      "expectations": [
+        "Associates 400 Bad Request with usage validation",
+        "Lists required usage fields: promptTokens, completionTokens, cacheReadTokens, cacheWriteTokens, reasoningTokens",
+        "Says to pass 0 for unused categories rather than omitting or using null",
+        "References POST /api/models/pricing/calculate"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "the pricing api returned 402 for a model. what does that mean?",
+      "expected_output": "Enterprise-only model; error payload with pricing null; suggest contacting Narev for enterprise access",
+      "files": [],
+      "expectations": [
+        "Explains 402 Payment Required as enterprise-only / not in public catalog",
+        "Mentions error field and pricing: null in the response shape",
+        "Does not invent public token rates for that model"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "i want to snapshot model prices into our repo every night so ci doesn't drift. should i scrape the calculate endpoint?",
+      "expected_output": "Do not hardcode; for committed catalog use update-llm-pricing skill; GET list is fine for live lookups",
+      "files": [],
+      "expectations": [
+        "Warns against hardcoding rates or treating a one-off scrape as the long-term source of truth",
+        "Points to update-llm-pricing (or equivalent) for committing catalog snapshots / generator workflows",
+        "May still mention GET /api/models/pricing as the live catalog source"
+      ]
+    }
+  ]
+}

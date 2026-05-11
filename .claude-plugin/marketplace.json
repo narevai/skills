@@ -1,0 +1,23 @@
+{
+  "name": "narev-skills",
+  "owner": {
+    "name": "Narev",
+    "email": "support@narev.ai"
+  },
+  "metadata": {
+    "description": "Official Narev skills for AI coding agents",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "pricing",
+      "description": "Narev Cloud Pricing API: lookup (reference) and update (snapshot) skills",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/pricing/narev-lookup-llm-pricing",
+        "./skills/pricing/narev-update-llm-pricing"
+      ]
+    }
+  ]
+}
