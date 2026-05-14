@@ -1,0 +1,27 @@
+{
+  "name": "nextjs-narev-billing",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "next build",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ai-billing/core": "latest",
+    "@ai-billing/openai": "latest",
+    "@ai-billing/polar": "latest",
+    "@ai-sdk/openai": "latest",
+    "@ai-sdk/provider": "latest",
+    "ai": "latest",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "server-only": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "typescript": "latest"
+  }
+}

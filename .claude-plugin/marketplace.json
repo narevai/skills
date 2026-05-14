@@ -27,6 +27,15 @@
         "./skills/pricing/narev-lookup-llm-pricing",
         "./skills/pricing/narev-update-llm-pricing"
       ]
+    },
+    {
+      "name": "frameworks",
+      "description": "Framework-specific Narev implementation patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/frameworks/narev-nextjs-patterns"
+      ]
     }
   ]
 }
