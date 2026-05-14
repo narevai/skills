@@ -17,8 +17,7 @@
     "ai": "latest",
     "next": "latest",
     "react": "latest",
-    "react-dom": "latest",
-    "server-only": "latest"
+    "react-dom": "latest"
   },
   "devDependencies": {
     "@types/node": "latest",
