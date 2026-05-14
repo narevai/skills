@@ -6,7 +6,8 @@
       "prompt": "my Next.js route at app/api/chat/route.ts calls streamText with a raw OpenAI model. add Narev billing so usage is priced with createNarevPriceResolver and emitted to the console while I test locally.",
       "expected_output": "Wraps the OpenAI language model with @ai-billing/openai middleware using createNarevPriceResolver and consoleDestination",
       "scaffold": "nextjs-narev-billing",
-      "assertions": [
+      "files": [],
+      "expectations": [
         "Imports wrapLanguageModel from ai or uses a helper that calls wrapLanguageModel",
         "Imports createOpenAIMiddleware from @ai-billing/openai",
         "Imports createNarevPriceResolver and consoleDestination from @ai-billing/core",
@@ -19,7 +20,8 @@
       "prompt": "centralize billing in lib/ai/providers.ts so every call to getLanguageModel returns a billed model. keep it server-only and do not initialize billing in client components.",
       "expected_output": "Moves billing wrapper into the server-only provider helper and returns wrapped models from getLanguageModel",
       "scaffold": "nextjs-narev-billing",
-      "assertions": [
+      "files": [],
+      "expectations": [
         "Keeps or adds import 'server-only' in lib/ai/providers.ts",
         "Creates billing middleware at module scope or through a cached helper",
         "getLanguageModel returns wrapLanguageModel({ model, middleware }) or an equivalent billed wrapper",
@@ -32,7 +34,8 @@
       "prompt": "add customer attribution to the chat route's AI SDK call. tag each billed event with userId, chatId, and modelId using the ai-billing providerOptions convention.",
       "expected_output": "Adds providerOptions['ai-billing-tags'] to the streamText call with stable user and chat identifiers",
       "scaffold": "nextjs-narev-billing",
-      "assertions": [
+      "files": [],
+      "expectations": [
         "Adds providerOptions to the streamText call",
         "Uses the exact key 'ai-billing-tags'",
         "Includes userId from the parsed request or trusted session value",
@@ -45,7 +48,8 @@
       "prompt": "replace console billing with a Polar destination for production. use POLAR_ACCESS_TOKEN, POLAR_SERVER, eventName llm_usage, and externalCustomerIdKey userId.",
       "expected_output": "Configures createPolarDestination and passes it as the billing middleware destination",
       "scaffold": "nextjs-narev-billing",
-      "assertions": [
+      "files": [],
+      "expectations": [
         "Imports createPolarDestination from @ai-billing/polar",
         "Reads POLAR_ACCESS_TOKEN and POLAR_SERVER from process.env in server-only code",
         "Configures eventName as llm_usage",
@@ -58,7 +62,8 @@
       "prompt": "avoid sending billing events during tests. update the shared billing/model helper so NODE_ENV=test returns the raw model while production still wraps with Narev billing.",
       "expected_output": "Adds a test-environment bypass before creating or applying billing middleware",
       "scaffold": "nextjs-narev-billing",
-      "assertions": [
+      "files": [],
+      "expectations": [
         "Checks NODE_ENV or an existing test-environment constant before wrapping models",
         "Returns the raw provider model in tests",
         "Keeps billing enabled outside tests when destination and Narev config are present",
@@ -71,7 +76,8 @@
       "prompt": "add a second Groq route using Narev billing. it should use createGroq, createGroqMiddleware, createNarevPriceResolver, and wrapLanguageModel with llama-3.3-70b-versatile.",
       "expected_output": "Creates or updates a Groq route with provider-matched billing middleware and a wrapped Groq model",
       "scaffold": "nextjs-narev-billing",
-      "assertions": [
+      "files": [],
+      "expectations": [
         "Imports createGroq from @ai-sdk/groq",
         "Imports createGroqMiddleware from @ai-billing/groq",
         "Uses createNarevPriceResolver with NAREV_API_KEY",
