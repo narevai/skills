@@ -22,7 +22,7 @@
   "interface": {
     "displayName": "Narev",
     "shortDescription": "Usage-based billing with Narev",
-    "longDescription": "Official Narev skills bundle for AI coding agents. Includes a router skill plus framework-specific patterns (Next.js, React, Vue, Nuxt, Astro, TanStack Start, Expo, React Router, Chrome Extension) and feature skills (organizations, billing, webhooks, testing).",
+    "longDescription": "Official Narev skills bundle for AI coding agents. Includes a router skill, pricing API skills, and framework-specific Next.js patterns for usage-based AI billing.",
     "developerName": "Narev",
     "category": "Coding",
     "capabilities": [

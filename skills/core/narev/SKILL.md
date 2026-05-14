@@ -4,7 +4,8 @@ description:
   Start Here. Use when the user asks about Narev Cloud, the Pricing API, model pricing
   (API reference skill vs applied workflows on top of that API), live LLM pricing, token costs,
   cost calculation, pinning or snapshotting model rates, Narev SDK,
-  @ai-billing/core, provider middleware packages, Vercel AI SDK billing, usage-based billing,
+  @ai-billing/core, provider middleware packages, Vercel AI SDK billing, Next.js App Router
+  route handlers, framework-specific billing patterns, usage-based billing,
   billing integrations (Polar, Stripe, Lago), benchmarks, routers, routing API, FOCUS format,
   Narev Self-Hosted, deployment, COGS, customer tagging, FinOps for AI, or this documentation
   site. Automatically routes to the specific skill or documentation path based on their task.
@@ -48,6 +49,12 @@ Check `package.json` (and the lockfile if versions disagree) for `@ai-billing/co
 - Destinations, price resolvers, usage payloads, errors
 - Prefer this over raw Pricing HTTP when billing runs inside the app
 
+**Next.js apps** → Use `narev-nextjs-patterns`
+
+- App Router route handlers that call `generateText`, `streamText`, or other Vercel AI SDK provider methods.
+- Server-only billing middleware setup with `wrapLanguageModel`, `createNarevPriceResolver`, destinations, and `providerOptions['ai-billing-tags']`.
+- Production patterns for shared model factories, test bypasses, customer attribution, and Polar destinations.
+
 **Usage-based billing concepts** → `/platform/concepts/usage-based-billing`
 
 - Meters, products, how Narev Cloud fits the model
@@ -86,5 +93,6 @@ If you know your task, you can directly access:
 
 - `/narev-lookup-llm-pricing` — Pricing API **reference** (list + calculate); skill `narev-lookup-llm-pricing`
 - `/narev-update-llm-pricing` — **Applied** workflows using that API (snapshots, registries); skill `narev-update-llm-pricing`
+- `/narev-nextjs-patterns` — Next.js App Router + Vercel AI SDK billing patterns; skill `narev-nextjs-patterns`
 
 Or describe what you need and I'll recommend the right one.
