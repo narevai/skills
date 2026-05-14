@@ -33,6 +33,15 @@ export async function POST(request: Request) {
     },
   });
 
+  // Extract cost from providerMetadata
+  const billing = (result.providerMetadata as Record<string, unknown> | undefined)?.['ai-billing'] as
+    | { cost?: { amount: number; currency: string } }
+    | undefined;
+
+  if (billing?.cost) {
+    console.log(`Cost: ${billing.cost.amount} ${billing.cost.currency}`);
+  }
+
   return Response.json(result);
 }
 ```
@@ -65,6 +74,16 @@ export async function POST(request: Request) {
     messages,
     providerOptions: {
       'ai-billing-tags': { userId, chatId, modelId },
+    },
+    async onFinish({ providerMetadata }) {
+      const billing = (providerMetadata as Record<string, unknown> | undefined)?.['ai-billing'] as
+        | { cost?: { amount: number; currency: string } }
+        | undefined;
+
+      if (billing?.cost) {
+        console.log(`Cost: ${billing.cost.amount} ${billing.cost.currency}`);
+        // e.g., stream to client, deduct from DB, etc.
+      }
     },
   });
 
