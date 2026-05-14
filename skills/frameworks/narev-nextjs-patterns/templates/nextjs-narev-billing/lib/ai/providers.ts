@@ -40,6 +40,8 @@ function getBillingMiddleware() {
     );
   }
 
+  if (destinations.length === 0) return null;
+
   const narevApiKey = process.env.NAREV_API_KEY ?? '';
 
   const priceResolver = createNarevPriceResolver({
