@@ -25,6 +25,7 @@ For raw Pricing API lookup and cost calculation, use `narev-lookup-llm-pricing`.
 | Resolve model prices with Narev | references/price-resolvers.md |
 | Send usage to destinations and tag customers | references/destinations-and-tags.md |
 | Production-safe setup | references/production-setup.md |
+| Full-stack Polar integration (existing chatbot) | references/polar-integration.md |
 
 ## Mental Model
 
@@ -38,6 +39,8 @@ Narev billing lives on the server, next to the AI provider call:
 6. Add `providerOptions['ai-billing-tags']` with stable customer, user, organization, chat, or plan identifiers.
 
 Keep API keys, billing destinations, and wrapped model factories out of Client Components.
+
+**AI Gateway variant:** When the app uses `gateway.languageModel()` from the Vercel AI Gateway, substitute `createGatewayV3Middleware` from `@ai-billing/gateway` in place of a provider-specific middleware. The Gateway already resolves per-token pricing, so no `priceResolver` is needed. See `references/polar-integration.md` for the complete end-to-end pattern including customer creation, rate limiting, cost streaming to the browser, and a usage dashboard.
 
 ## Minimal Pattern
 
@@ -101,6 +104,8 @@ export async function POST(request: Request) {
 | OpenRouter | `@openrouter/ai-sdk-provider` | `@ai-billing/openrouter` |
 
 Use the middleware package that matches the model provider passed to the Vercel AI SDK. Do not share one provider's billing middleware with another provider's model.
+
+**Polar destination packages:** When routing billing events to Polar, also install `@ai-billing/polar` (destination adapter) and `@polar-sh/sdk` (Polar API client for customer management). For prebuilt usage dashboard UI, install `@ai-billing/nextjs`.
 
 ## See Also
 

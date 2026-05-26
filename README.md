@@ -56,7 +56,7 @@ git clone https://github.com/narevai/skills ~/.claude/skills/narev
 
 | Skill | Purpose | When to use |
 |-------|---------|-------------|
-| `narev` | **Router** — picks the right skill or documentation path | Any Narev Cloud, pricing, billing, or SDK question; start here when unsure |
+| `narev` | **Overview** — picks the right skill or documentation path | Any Narev Cloud, pricing, billing, or SDK question; start here when unsure |
 | `narev-lookup-llm-pricing` | **Pricing API reference** — `GET` catalog, `POST` calculate, errors and contracts | Live rates, per-call cost math, endpoint behavior without committing a snapshot |
 | `narev-update-llm-pricing` | **Pin pricing in-repo** — patterns to snapshot the catalog into your codebase | Freeze rates, refresh a checked-in pricing file, offline or deterministic billing |
 | `narev-nextjs-patterns` | **Next.js framework patterns** — App Router route handlers, Vercel AI SDK billing middleware, destinations, and usage tags | Add Narev usage-based AI billing to Next.js apps that call LLM providers |
@@ -64,7 +64,7 @@ git clone https://github.com/narevai/skills ~/.claude/skills/narev
 ## Quick start
 
 1. Read the [Narev documentation](https://www.narev.ai/docs) for Cloud setup, API keys, and SDKs.
-2. Open your agent’s skills or slash commands and invoke **`narev`** first; it routes to **`narev-lookup-llm-pricing`** or **`narev-update-llm-pricing`** when the task is pricing-specific.
+2. Open your agent’s skills or slash commands and invoke **`narev`** first; it recommends **`narev-lookup-llm-pricing`** or **`narev-update-llm-pricing`** when the task is pricing-specific.
 
 Example prompts:
 
