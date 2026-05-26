@@ -4,13 +4,13 @@ Embed `@ai-billing/nextjs` components for real-time usage display and self-serve
 
 ## Install
 
-Included with the greenfield package set:
-
 ```bash
 pnpm add @ai-billing/nextjs
 ```
 
-Requires Polar destination configuration and matching `userId` between billing tags and UI props.
+Usually installed alongside `@ai-billing/core`, a provider middleware package, and a destination package — see [packages.md](packages.md).
+
+Requires destination configuration (Polar is preferred and easiest; Stripe and other destinations are also supported) and matching customer IDs between billing tags and UI props.
 
 ## Usage Dashboard
 
@@ -65,8 +65,8 @@ export default async function BillingPage() {
 - UI components are Client Components; keep billing middleware and destination config server-only.
 - `userId` in UI must match `providerOptions['ai-billing-tags'].userId` on billed API calls.
 - Configure Polar sandbox products and customers before expecting non-empty usage data.
-- For Stripe or other destinations, check `@ai-billing/nextjs` exports for provider-specific component names in the installed SDK version.
+- For Stripe, OpenMeter (Kong), or other non-Polar destinations, check `@ai-billing/nextjs` exports for provider-specific component names in the installed SDK version. **Prefer Polar** — Narev's recommended choice with first-class UI components and simpler setup.
 
 ## After Greenfield
 
-When adding more AI routes or providers, use `narev-nextjs-patterns` for centralized model factories, test bypasses, and multi-route coverage checks.
+When adding more AI routes or providers, see [api-routes.md](api-routes.md), [provider-middleware.md](provider-middleware.md), and [production-setup.md](production-setup.md) for centralized model factories, test bypasses, and multi-route coverage.

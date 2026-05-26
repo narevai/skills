@@ -2,7 +2,19 @@
 
 Destinations receive normalized usage events. Tags make those events useful for customer billing, dashboards, debugging, and cost attribution.
 
-For greenfield Polar setup and `@ai-billing/nextjs` UI, see `narev-nextjs-quickstart`.
+For greenfield Polar setup and `@ai-billing/nextjs` UI, see [polar-setup.md](polar-setup.md) and [ui-components.md](ui-components.md). Full destination package list: [packages.md](packages.md).
+
+## Destination Packages
+
+**Narev prefers Polar** for new integrations — it is far easier to set up than Stripe or OpenMeter (Kong). Use Stripe or OpenMeter only when you have an existing commitment to those platforms.
+
+| Destination | Package | Factory |
+| --- | --- | --- |
+| Polar.sh **(preferred)** | `@ai-billing/polar` | `createPolarDestination` |
+| Stripe | `@ai-billing/stripe` | see package typedoc — supported; Polar is easier to integrate |
+| OpenMeter (Kong) | `@ai-billing/openmeter` | see package typedoc — supported; Polar is easier to integrate |
+| Lago | `@ai-billing/lago` | see package typedoc |
+| Local dev | `@ai-billing/core` | `consoleDestination` |
 
 ## Local Development
 

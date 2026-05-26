@@ -12,13 +12,17 @@ POLAR_ACCESS_TOKEN=your_polar_access_token_here
 POLAR_SERVER=sandbox
 ```
 
-Polar is the default in this guide; the same pattern works with Stripe, OpenMeter, Lago, or other supported destinations.
+Polar is the default and **Narev's preferred destination** in this guide — it is by far the easiest to integrate. The same middleware pattern works with Stripe, OpenMeter (Kong), Lago, or other supported destinations, but choose Polar unless you are locked into another platform.
 
 ## 2. Install Packages
+
+Default stack (OpenAI + Polar + UI):
 
 ```bash
 pnpm add @ai-billing/core @ai-billing/openai @ai-billing/polar @ai-billing/nextjs ai @ai-sdk/openai
 ```
+
+Other provider and destination combinations — including OpenRouter, Stripe, OpenMeter (Kong), Lago, Gateway, Anthropic, Groq, and the rest — are listed in [packages.md](packages.md). For destinations, **prefer Polar** over Stripe or OpenMeter (Kong) whenever possible.
 
 Check `package.json` for installed major versions and match code samples to the typedoc pages under `/sdk/ai-billing/reference/...`.
 
@@ -99,7 +103,7 @@ export async function POST(req: Request) {
 }
 ```
 
-For UI-message chat clients, use `convertToModelMessages` and `toUIMessageStreamResponse()` instead — see `narev-nextjs-patterns` references.
+For UI-message chat clients, use `convertToModelMessages` and `toUIMessageStreamResponse()` instead — see [api-routes.md](api-routes.md).
 
 ## 6. Billing UI
 

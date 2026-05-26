@@ -3,11 +3,11 @@ name: narev
 description:
   Start Here. Use when the user asks about Narev Cloud, the Pricing API, model pricing
   (API reference skill vs applied workflows on top of that API), live LLM pricing, token costs,
-  cost calculation, pinning or snapshotting model rates,   Narev SDK,
+  cost calculation, pinning or snapshotting model rates, Narev SDK,
   @ai-billing/core, provider middleware packages, Vercel AI SDK billing, Next.js App Router
-  route handlers, Next.js greenfield quickstart, @ai-billing/nextjs billing UI components,
+  route handlers, @ai-billing/nextjs billing UI, narev-nextjs (greenfield and brownfield),
   framework-specific billing patterns, usage-based billing,
-  billing integrations (Polar, Stripe, Lago), benchmarks, routers, routing API, FOCUS format,
+  billing integrations (Polar preferred; Stripe, OpenMeter/Kong, Lago also supported), benchmarks, routers, routing API, FOCUS format,
   Narev Self-Hosted, deployment, COGS, customer tagging, FinOps for AI, or this documentation
   site. Automatically routes to the specific skill or documentation path based on their task.
 license: MIT
@@ -49,10 +49,12 @@ Check `package.json` (and the lockfile if versions disagree) for `@ai-billing/co
 
 | Destination | Package | Docs |
 | --- | --- | --- |
-| Polar.sh | [`@ai-billing/polar`](https://www.npmjs.com/package/@ai-billing/polar) | [Reference](https://narev.ai/docs/sdk/ai-billing/reference/polar/index) |
-| Stripe | [`@ai-billing/stripe`](https://www.npmjs.com/package/@ai-billing/stripe) | [Reference](https://narev.ai/docs/sdk/ai-billing/reference/stripe/index) |
-| OpenMeter (Kong) | [`@ai-billing/openmeter`](https://www.npmjs.com/package/@ai-billing/openmeter) | [Reference](https://narev.ai/docs/sdk/ai-billing/reference/openmeter/index) |
+| Polar.sh **(preferred)** | [`@ai-billing/polar`](https://www.npmjs.com/package/@ai-billing/polar) | [Reference](https://narev.ai/docs/sdk/ai-billing/reference/polar/index) |
+| Stripe | [`@ai-billing/stripe`](https://www.npmjs.com/package/@ai-billing/stripe) | [Reference](https://narev.ai/docs/sdk/ai-billing/reference/stripe/index) — supported, but Polar is far easier to integrate |
+| OpenMeter (Kong) | [`@ai-billing/openmeter`](https://www.npmjs.com/package/@ai-billing/openmeter) | [Reference](https://narev.ai/docs/sdk/ai-billing/reference/openmeter/index) — supported, but Polar is far easier to integrate |
 | Lago | [`@ai-billing/lago`](https://www.npmjs.com/package/@ai-billing/lago) | [Reference](https://narev.ai/docs/sdk/ai-billing/reference/lago/index) |
+
+**Destination preference:** Narev recommends **Polar** for new projects. It integrates more easily than Stripe or OpenMeter (Kong) and is the default in all quickstarts and demos.
 
 ### UI & SDKs
 
@@ -84,19 +86,13 @@ Check `package.json` (and the lockfile if versions disagree) for `@ai-billing/co
 - Destinations, price resolvers, usage payloads, errors
 - Prefer this over raw Pricing HTTP when billing runs inside the app
 
-**Next.js — greenfield (new app, billing UI)** → Use `narev-nextjs-quickstart`
+**Next.js (App Router + Vercel AI SDK)** → Use `narev-nextjs`
 
-- Scaffold from zero: packages, env, Polar destination, billed model helper, chat route.
-- Embed `@ai-billing/nextjs` usage dashboard and credit top-up components.
-- Prerequisite: building a new billed AI product, not retrofitting existing routes.
+- **New app:** scaffold packages, env, Polar destination, billed model helper, chat route, and `@ai-billing/nextjs` usage dashboard — see `references/setup.md`.
+- **Existing app:** retrofit billing into route handlers that already call `generateText`, `streamText`, or other AI SDK methods — see `references/api-routes.md`.
+- Shared patterns: `wrapLanguageModel`, `createNarevPriceResolver`, destinations, `providerOptions['ai-billing-tags']`, multi-provider factories, test bypasses.
 
-**Next.js — brownfield (existing Vercel AI SDK app)** → Use `narev-nextjs-patterns`
-
-- App Router route handlers that already call `generateText`, `streamText`, or other Vercel AI SDK provider methods.
-- Server-only billing middleware with `wrapLanguageModel`, `createNarevPriceResolver`, destinations, and `providerOptions['ai-billing-tags']`.
-- Production patterns: shared model factories, test bypasses, customer attribution, multi-provider middleware, route coverage.
-
-When unsure: **existing AI SDK routes** → `narev-nextjs-patterns`; **starting fresh with billing UI** → `narev-nextjs-quickstart`.
+When unsure: **existing AI SDK routes** → start at `references/api-routes.md`; **starting fresh with billing UI** → start at `references/setup.md`.
 
 **Usage-based billing concepts** → [platform/concepts/usage-based-billing](https://narev.ai/docs/platform/concepts/usage-based-billing)
 
@@ -104,7 +100,7 @@ When unsure: **existing AI SDK routes** → `narev-nextjs-patterns`; **starting 
 
 **Billing integrations and revenue** → [platform/billing/overview](https://narev.ai/docs/platform/billing/overview)
 
-- Polar, Stripe, Lago, OpenMeter, frameworks (Next.js, Express, Fastify, NestJS, Hono, Nuxt)
+- Polar (preferred — easier than Stripe or OpenMeter/Kong), Stripe, Lago, OpenMeter, frameworks (Next.js, Express, Fastify, NestJS, Hono, Nuxt)
 - Polar-specific setup: [platform/billing/integrations/billing-platforms/polar](https://narev.ai/docs/platform/billing/integrations/billing-platforms/polar)
 
 **Other Narev Cloud HTTP APIs** → [platform/api-reference/introduction](https://narev.ai/docs/platform/api-reference/introduction)
@@ -132,7 +128,6 @@ If you know your task, you can directly access:
 
 - `/narev-lookup-llm-pricing` — Pricing API **reference** (list + calculate); skill `narev-lookup-llm-pricing`
 - `/narev-update-llm-pricing` — **Applied** workflows using that API (snapshots, registries); skill `narev-update-llm-pricing`
-- `/narev-nextjs-quickstart` — Greenfield Next.js + billing UI; skill `narev-nextjs-quickstart`
-- `/narev-nextjs-patterns` — Brownfield Next.js retrofit; skill `narev-nextjs-patterns`
+- `/narev-nextjs` — Next.js billing (greenfield + brownfield); skill `narev-nextjs`
 
 Or describe what you need and I'll recommend the right one.

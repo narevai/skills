@@ -1,6 +1,6 @@
 # Narev Skills
 
-AI agent skills for [Narev](https://www.narev.ai) Cloud, pricing APIs, framework patterns, and related billing workflows. Five skills in three layout areas.
+AI agent skills for [Narev](https://www.narev.ai) Cloud, pricing APIs, framework patterns, and related billing workflows. Four skills in three layout areas.
 
 ## Structure
 
@@ -9,8 +9,7 @@ skills/
 ├── core/
 │   └── narev/                          # router — when to use which skill or doc path
 ├── frameworks/
-│   ├── narev-nextjs-quickstart/        # Greenfield Next.js + @ai-billing/nextjs billing UI
-│   └── narev-nextjs-patterns/          # Brownfield retrofit for existing Vercel AI SDK apps
+│   └── narev-nextjs/                  # Next.js greenfield + brownfield Narev billing
 └── pricing/
     ├── narev-lookup-llm-pricing/       # Pricing API reference (GET catalog, POST calculate)
     └── narev-update-llm-pricing/       # Snapshot / pin rates into the repo

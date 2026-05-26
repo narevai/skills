@@ -57,4 +57,4 @@ The `userId` value must correspond to an existing Polar customer (or your provis
 ## See Also
 
 - [Polar billing platform integration](https://www.narev.ai/docs/platform/billing/integrations/billing-platforms/polar)
-- `narev-nextjs-patterns` → `references/destinations-and-tags.md` for tagging rules in brownfield apps
+- [destinations-and-tags.md](destinations-and-tags.md) for tagging rules in brownfield apps

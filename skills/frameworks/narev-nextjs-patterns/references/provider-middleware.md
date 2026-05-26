@@ -1,15 +1,22 @@
 # Provider Middleware
 
-Use the `@ai-billing/<provider>` middleware that matches the provider model passed to the Vercel AI SDK.
+Use the `@ai-billing/<provider>` middleware that matches the provider model passed to the Vercel AI SDK. Full package list and install examples: [packages.md](packages.md).
 
-| Provider | Model factory | Billing middleware |
-|----------|---------------|--------------------|
-| OpenAI | `createOpenAI()` from `@ai-sdk/openai` | `createOpenAIMiddleware()` from `@ai-billing/openai` |
-| Groq | `createGroq()` from `@ai-sdk/groq` | `createGroqMiddleware()` from `@ai-billing/groq` |
-| Anthropic | `createAnthropic()` from `@ai-sdk/anthropic` | `createAnthropicMiddleware()` from `@ai-billing/anthropic` |
-| Google | `createGoogleGenerativeAI()` from `@ai-sdk/google` | `createGoogleMiddleware()` from `@ai-billing/google` |
-| OpenRouter | OpenRouter AI SDK provider | `createOpenRouterMiddleware()` from `@ai-billing/openrouter` |
-| AI Gateway | Gateway provider | `createGatewayV3Middleware()` from `@ai-billing/gateway` |
+| Provider | Model factory | Billing package | Middleware factory |
+| --- | --- | --- | --- |
+| OpenRouter | `createOpenRouter()` from `@openrouter/ai-sdk-provider` | `@ai-billing/openrouter` | `createOpenRouterV3Middleware()` |
+| OpenAI | `createOpenAI()` from `@ai-sdk/openai` | `@ai-billing/openai` | `createOpenAIMiddleware()` or `createOpenAIV3Middleware()` |
+| Vercel AI Gateway | `gateway.languageModel()` from `ai` | `@ai-billing/gateway` | `createGatewayV3Middleware()` |
+| OpenAI Compatible | compatible provider from `@ai-sdk/openai-compatible` | `@ai-billing/openai-compatible` | see package typedoc |
+| Groq | `createGroq()` from `@ai-sdk/groq` | `@ai-billing/groq` | `createGroqMiddleware()` |
+| Google Generative AI | `createGoogleGenerativeAI()` from `@ai-sdk/google` | `@ai-billing/google` | see package typedoc |
+| Anthropic | `createAnthropic()` from `@ai-sdk/anthropic` | `@ai-billing/anthropic` | see package typedoc |
+| xAI Grok | `createXai()` from `@ai-sdk/xai` | `@ai-billing/xai` | see package typedoc |
+| MiniMax | MiniMax AI SDK provider | `@ai-billing/minimax` | see package typedoc |
+| DeepSeek | DeepSeek AI SDK provider | `@ai-billing/deepseek` | see package typedoc |
+| Chutes | Chutes AI SDK provider | `@ai-billing/chutes` | see package typedoc |
+
+Factory names may differ by SDK version — confirm exports in the installed package typedoc.
 
 ## OpenAI
 
@@ -32,6 +39,31 @@ export function getModel(modelId: string) {
   return wrapLanguageModel({
     model: openai(modelId),
     middleware,
+  });
+}
+```
+
+## OpenRouter
+
+```typescript
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { createOpenRouterV3Middleware } from '@ai-billing/openrouter';
+import { createPolarDestination } from '@ai-billing/polar';
+import { wrapLanguageModel } from 'ai';
+
+const billingMiddleware = createOpenRouterV3Middleware({
+  destinations: [
+    createPolarDestination({
+      accessToken: process.env.POLAR_ACCESS_TOKEN!,
+      eventName: 'llm_usage',
+    }),
+  ],
+});
+
+export function getModel(modelId: string) {
+  return wrapLanguageModel({
+    model: createOpenRouter({ apiKey: process.env.OPENROUTER_API_KEY! })(modelId),
+    middleware: billingMiddleware,
   });
 }
 ```
@@ -66,4 +98,4 @@ export function getModel(modelId: string) {
 - Match middleware to provider. Do not use OpenAI billing middleware for a Groq, Anthropic, Gateway, or OpenRouter model.
 - Wrap at the language-model boundary, then pass the wrapped model to `generateText`, `streamText`, `embed`, or other provider-calling AI SDK methods.
 - For multi-provider apps, centralize model factories so each provider path wraps with its own middleware.
-- For AI Gateway middleware, prices can come from Gateway usage metadata; add a Narev price resolver only when the provider middleware requires live catalog rates.
+- For AI Gateway middleware, prices come from Gateway usage metadata — no `createNarevPriceResolver` when using `gateway.languageModel()`.
