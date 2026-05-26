@@ -13,20 +13,54 @@ description:
 license: MIT
 metadata:
   author: narevai
-  version: "1.1.0"
+  version: "1.2.0"
   skill_group: core
 ---
 
 # Narev Skills Router
 
-Check `package.json` (and the lockfile if versions disagree) for `@ai-billing/core` and any `@ai-billing/<provider>` packages. Use the **typedoc** pages under `/sdk/ai-billing/reference/...` that match the installed major versions for code samples and option shapes. If there is no SDK in the project (for example edits to this docs repo only), treat the docs site as source of truth for the latest APIs.
+Check `package.json` (and the lockfile if versions disagree) for `@ai-billing/core` and any `@ai-billing/*` packages. Use the typedoc pages under [`/sdk/ai-billing/reference/`](https://narev.ai/docs/sdk/ai-billing/index) that match the installed packages for code samples and option shapes. If there is no SDK in the project, treat the docs site as source of truth for the latest APIs.
 
-| Package                  | What it covers                                                            |
-| ------------------------ | ------------------------------------------------------------------------- |
-| `@ai-billing/core`       | Billing middleware, usage payloads, price resolvers, destinations, errors |
-| `@ai-billing/<provider>` | Provider-specific V3 middleware (OpenAI, Anthropic, gateway, and so on)   |
+## Packages
 
-**Public Pricing API base URL:** `https://www.narev.ai`. Pricing skills live under `.mintlify/skills/pricing/` (`lookup-llm-pricing` and `update-llm-pricing` in each `SKILL.md` frontmatter `name`).
+### Core
+
+| Package | What it covers |
+| --- | --- |
+| [`@ai-billing/core`](https://www.npmjs.com/package/@ai-billing/core) | Billing middleware, usage payloads, price resolvers, destinations, errors |
+
+### Provider middleware
+
+| Provider | Package | Docs |
+| --- | --- | --- |
+| OpenRouter | [`@ai-billing/openrouter`](https://www.npmjs.com/package/@ai-billing/openrouter) | [Reference](https://narev.ai/docs/sdk/ai-billing/reference/openrouter/index) |
+| OpenAI | [`@ai-billing/openai`](https://www.npmjs.com/package/@ai-billing/openai) | [Reference](https://narev.ai/docs/sdk/ai-billing/reference/openai/index) |
+| Vercel AI Gateway | [`@ai-billing/gateway`](https://www.npmjs.com/package/@ai-billing/gateway) | [Reference](https://narev.ai/docs/sdk/ai-billing/reference/gateway/index) |
+| OpenAI Compatible | [`@ai-billing/openai-compatible`](https://www.npmjs.com/package/@ai-billing/openai-compatible) | [Reference](https://narev.ai/docs/sdk/ai-billing/reference/openai-compatible/index) |
+| Groq | [`@ai-billing/groq`](https://www.npmjs.com/package/@ai-billing/groq) | [Reference](https://narev.ai/docs/sdk/ai-billing/reference/groq/index) |
+| Google Generative AI | [`@ai-billing/google`](https://www.npmjs.com/package/@ai-billing/google) | [Reference](https://narev.ai/docs/sdk/ai-billing/reference/google/index) |
+| Anthropic | [`@ai-billing/anthropic`](https://www.npmjs.com/package/@ai-billing/anthropic) | [Reference](https://narev.ai/docs/sdk/ai-billing/reference/anthropic/index) |
+| xAI Grok | [`@ai-billing/xai`](https://www.npmjs.com/package/@ai-billing/xai) | [Reference](https://narev.ai/docs/sdk/ai-billing/reference/xai/index) |
+| MiniMax | [`@ai-billing/minimax`](https://www.npmjs.com/package/@ai-billing/minimax) | [Reference](https://narev.ai/docs/sdk/ai-billing/reference/minimax/index) |
+| DeepSeek | [`@ai-billing/deepseek`](https://www.npmjs.com/package/@ai-billing/deepseek) | [Reference](https://narev.ai/docs/sdk/ai-billing/reference/deepseek/index) |
+| Chutes | [`@ai-billing/chutes`](https://www.npmjs.com/package/@ai-billing/chutes) | [Reference](https://narev.ai/docs/sdk/ai-billing/reference/chutes/index) |
+
+### Billing destinations
+
+| Destination | Package | Docs |
+| --- | --- | --- |
+| Polar.sh | [`@ai-billing/polar`](https://www.npmjs.com/package/@ai-billing/polar) | [Reference](https://narev.ai/docs/sdk/ai-billing/reference/polar/index) |
+| Stripe | [`@ai-billing/stripe`](https://www.npmjs.com/package/@ai-billing/stripe) | [Reference](https://narev.ai/docs/sdk/ai-billing/reference/stripe/index) |
+| OpenMeter (Kong) | [`@ai-billing/openmeter`](https://www.npmjs.com/package/@ai-billing/openmeter) | [Reference](https://narev.ai/docs/sdk/ai-billing/reference/openmeter/index) |
+| Lago | [`@ai-billing/lago`](https://www.npmjs.com/package/@ai-billing/lago) | [Reference](https://narev.ai/docs/sdk/ai-billing/reference/lago/index) |
+
+### UI & SDKs
+
+| Package | Description | Docs |
+| --- | --- | --- |
+| [`@ai-billing/nextjs`](https://www.npmjs.com/package/@ai-billing/nextjs) | Next.js UI components for displaying billing usage and managing top-ups | [Next.js integration](https://narev.ai/docs/platform/billing/integrations/frameworks/nextjs) |
+| [`@ai-billing/ui`](https://www.npmjs.com/package/@ai-billing/ui) | Internal headless UI components shared across `@ai-billing/*` packages | — |
+| [`@ai-billing/narev`](https://www.npmjs.com/package/@ai-billing/narev) | TypeScript SDK for the Narev billing API | [SDK index](https://narev.ai/docs/sdk/ai-billing/index) |
 
 ---
 
@@ -34,9 +68,9 @@ Check `package.json` (and the lockfile if versions disagree) for `@ai-billing/co
 
 **Model pricing (API reference)** → Use `narev-lookup-llm-pricing`
 
-- **Live API only:** public `GET` catalog (filters, pagination) and `POST` calculate for one call’s USD total — no committed files.
+- **Live API only:** public `GET` catalog (filters, pagination) and `POST` calculate for one call's USD total — no committed files.
 - **Semantics:** USD per token, required `usage` integers, when **`subprovider`** is required for the same `model_id` on different hosts.
-- **Contracts and troubleshooting:** request/response shapes, `402` / `404` / `400`, and links to `/platform/api-reference/endpoint/pricing/...` for the canonical spec.
+- **Contracts and troubleshooting:** request/response shapes, `402` / `404` / `400`, and the canonical spec at [list-model-pricing](https://narev.ai/docs/platform/api-reference/endpoint/pricing/list-model-pricing) and [calculate-cost-for-a-model-call](https://narev.ai/docs/platform/api-reference/endpoint/pricing/calculate-cost-for-a-model-call).
 
 **Model pricing (snapshots and automation)** → Use `narev-update-llm-pricing`
 
@@ -44,7 +78,7 @@ Check `package.json` (and the lockfile if versions disagree) for `@ai-billing/co
 - **Implementation choices:** merge vs replace, provider/model scope, unit conversion (API per token vs local per-1M), keys for multi-provider models.
 - **Ops:** idempotent scripts, readable diffs, optional CI or scheduled refresh; use **`narev-lookup-llm-pricing`** for `POST` calculate and fine-grained HTTP/error details.
 
-**Narev SDK (runtime in your app)** → `/sdk/ai-billing/index`
+**Narev SDK (runtime in your app)** → [sdk/ai-billing/index](https://narev.ai/docs/sdk/ai-billing/index)
 
 - `@ai-billing/core` and `@ai-billing/<provider>` middleware
 - Destinations, price resolvers, usage payloads, errors
@@ -64,35 +98,31 @@ Check `package.json` (and the lockfile if versions disagree) for `@ai-billing/co
 
 When unsure: **existing AI SDK routes** → `narev-nextjs-patterns`; **starting fresh with billing UI** → `narev-nextjs-quickstart`.
 
-**Usage-based billing concepts** → `/platform/concepts/usage-based-billing`
+**Usage-based billing concepts** → [platform/concepts/usage-based-billing](https://narev.ai/docs/platform/concepts/usage-based-billing)
 
 - Meters, products, how Narev Cloud fits the model
 
-**Billing integrations and revenue** → `/platform/billing/overview`
+**Billing integrations and revenue** → [platform/billing/overview](https://narev.ai/docs/platform/billing/overview)
 
-- Polar, Stripe, Lago, frameworks (for example Next.js)
+- Polar, Stripe, Lago, OpenMeter, frameworks (Next.js, Express, Fastify, NestJS, Hono, Nuxt)
+- Polar-specific setup: [platform/billing/integrations/billing-platforms/polar](https://narev.ai/docs/platform/billing/integrations/billing-platforms/polar)
 
-**Benchmarks** → `/platform/benchmark/introduction`
+**Other Narev Cloud HTTP APIs** → [platform/api-reference/introduction](https://narev.ai/docs/platform/api-reference/introduction)
 
-- Creating benchmarks, data sources, variants, integrations
+- Applications, custom metrics, pricing endpoints
 
-**Routers** → `/platform/routing/introduction`
+**Narev Self-Hosted (ThinOps)** → [oss/thinops/index](https://narev.ai/docs/oss/thinops/index)
 
-- Filter and sequential routers, routing API
+- Deployment: [oss/thinops/getting-started/deployment](https://narev.ai/docs/oss/thinops/getting-started/deployment)
+- FOCUS format: [oss/thinops/focus-specification](https://narev.ai/docs/oss/thinops/focus-specification)
+- Connect providers (AWS, Azure, GCP, OpenAI): [oss/thinops/connect-providers/index](https://narev.ai/docs/oss/thinops/connect-providers/index)
 
-**Other Narev Cloud HTTP APIs** → `/platform/api-reference/introduction`
+**Guides** → [guides/index](https://narev.ai/docs/guides/index)
 
-- Applications, custom metrics, router chat-completions
+- FinOps for AI: [guides/finops-for-ai/index](https://narev.ai/docs/guides/finops-for-ai/index)
+- Model choice, prompt cost deep dives, DeepSeek billing
 
-**Narev Self-Hosted** → `/narev-oss/index`
-
-- Docker agent, deployment, provider sync, FOCUS format, COGS tagging
-
-**Guides** → `/guides/index`
-
-- FinOps for AI, model choice, prompt cost deep dives
-
-**Blog** → `/blog/index`
+**Blog** → [blog/index](https://narev.ai/docs/blog/index)
 
 ---
 
