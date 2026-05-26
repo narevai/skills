@@ -34,7 +34,7 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/frameworks/narev-nextjs-patterns"
+        "./skills/frameworks/narev-nextjs"
       ]
     }
   ]

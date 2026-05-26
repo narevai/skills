@@ -22,7 +22,7 @@
   "interface": {
     "displayName": "Narev",
     "shortDescription": "Usage-based billing with Narev",
-    "longDescription": "Official Narev skills bundle for AI coding agents. Includes a router skill, pricing API skills, and framework-specific Next.js patterns for usage-based AI billing.",
+    "longDescription": "Official Narev skills bundle for AI coding agents. Includes a router skill, pricing API skills, and a Next.js skill covering greenfield billing UI setup and brownfield Vercel AI SDK retrofit patterns.",
     "developerName": "Narev",
     "category": "Coding",
     "capabilities": [
@@ -31,8 +31,9 @@
     ],
     "websiteURL": "https://narev.ai",
     "defaultPrompt": [
-      "Add usage-based AI billing to my Next.js app with Narev",
-      "Meter LLM tokens and charge customers with Stripe via Narev",
+      "Set up usage-based AI billing in a new Next.js app with Narev and Polar",
+      "Add Narev billing middleware to my existing Next.js streamText route",
+      "Meter LLM tokens and charge customers with Polar via Narev (preferred over Stripe or OpenMeter/Kong)",
       "Snapshot live model pricing from Narev into a file in my repo"
     ],
     "brandColor": "#60a5fa",

@@ -2,6 +2,8 @@
 
 Use this reference when adding Polar as a billing destination to an **existing** Next.js App Router chatbot that already uses the Vercel AI SDK. It covers backend setup (AI Gateway middleware, Polar customer management, rate limiting) through to streaming generation cost to the browser and rendering a usage dashboard.
 
+Full `@ai-billing/*` package catalog: [packages.md](packages.md).
+
 ---
 
 ## 1. Install Dependencies

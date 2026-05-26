@@ -7,12 +7,12 @@ AI agent skills for [Narev](https://www.narev.ai) Cloud, pricing APIs, framework
 ```
 skills/
 ├── core/
-│   └── narev/                     # router — when to use which skill or doc path
+│   └── narev/                          # router — when to use which skill or doc path
 ├── frameworks/
-│   └── narev-nextjs-patterns/     # Next.js App Router + Vercel AI SDK billing patterns
+│   └── narev-nextjs/                  # Next.js greenfield + brownfield Narev billing
 └── pricing/
-    ├── narev-lookup-llm-pricing/  # Pricing API reference (GET catalog, POST calculate)
-    └── narev-update-llm-pricing/  # Snapshot / pin rates into the repo
+    ├── narev-lookup-llm-pricing/       # Pricing API reference (GET catalog, POST calculate)
+    └── narev-update-llm-pricing/       # Snapshot / pin rates into the repo
 ```
 
 ## Plugin Registry
