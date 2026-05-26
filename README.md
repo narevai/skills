@@ -59,7 +59,8 @@ git clone https://github.com/narevai/skills ~/.claude/skills/narev
 | `narev` | **Router** — picks the right skill or documentation path | Any Narev Cloud, pricing, billing, or SDK question; start here when unsure |
 | `narev-lookup-llm-pricing` | **Pricing API reference** — `GET` catalog, `POST` calculate, errors and contracts | Live rates, per-call cost math, endpoint behavior without committing a snapshot |
 | `narev-update-llm-pricing` | **Pin pricing in-repo** — patterns to snapshot the catalog into your codebase | Freeze rates, refresh a checked-in pricing file, offline or deterministic billing |
-| `narev-nextjs-patterns` | **Next.js framework patterns** — App Router route handlers, Vercel AI SDK billing middleware, destinations, and usage tags | Add Narev usage-based AI billing to Next.js apps that call LLM providers |
+| `narev-nextjs-quickstart` | **Next.js greenfield** — new app setup, Polar destination, billed model helper, `@ai-billing/nextjs` usage and top-up UI | Starting a new billed Next.js app with Narev billing dashboard and checkout |
+| `narev-nextjs-patterns` | **Next.js brownfield** — retrofit billing into existing Vercel AI SDK route handlers, multi-provider factories, test bypasses | App already calls `streamText` / `generateText` and needs Narev middleware added |
 
 ## Quick start
 
@@ -74,7 +75,8 @@ Example prompts:
 | “Calculate USD for this token usage” | `narev-lookup-llm-pricing` |
 | “Snapshot model pricing into a JSON file in my repo” | `narev-update-llm-pricing` |
 | “Which Narev skill should I use for billing middleware?” | `narev` |
-| “Add Narev billing to my Next.js chat route” | `narev-nextjs-patterns` |
+| “Set up a new Next.js app with Narev billing and usage dashboard” | `narev-nextjs-quickstart` |
+| “Add Narev billing to my existing Next.js chat route” | `narev-nextjs-patterns` |
 
 ## Repository structure
 
@@ -93,7 +95,8 @@ Example prompts:
 │   ├── core/
 │   │   └── narev/                     # Router skill
 │   ├── frameworks/
-│   │   └── narev-nextjs-patterns/     # Next.js App Router billing patterns
+│   │   ├── narev-nextjs-quickstart/   # Greenfield Next.js + billing UI
+│   │   └── narev-nextjs-patterns/     # Brownfield Vercel AI SDK retrofit
 │   └── pricing/
 │       ├── narev-lookup-llm-pricing/
 │       └── narev-update-llm-pricing/

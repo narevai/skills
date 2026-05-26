@@ -1,6 +1,6 @@
 ---
 name: narev-nextjs-patterns
-description: Next.js App Router patterns for Narev usage-based AI billing with the Vercel AI SDK, @ai-billing/core, provider middleware, price resolvers, destinations, route handlers, streaming, and customer usage tags.
+description: Brownfield Next.js patterns for adding Narev usage-based billing to existing Vercel AI SDK apps — wrap language models with @ai-billing provider middleware, createNarevPriceResolver, destinations, route handlers, streaming, customer tags, multi-provider factories, and test bypasses. Use when the app already calls generateText or streamText and you need to retrofit billing without scaffolding from scratch.
 license: MIT
 compatibility: Requires Next.js App Router, Vercel AI SDK v5-compatible models, @ai-billing/core, one @ai-billing/<provider> middleware package, and server-only NAREV_API_KEY when resolving live Narev prices at runtime.
 metadata:
@@ -10,11 +10,20 @@ metadata:
   skill_group: frameworks
 ---
 
-# Narev Next.js Patterns
+# Narev Next.js Patterns (Brownfield)
 
-Use this skill when adding or reviewing Narev usage-based billing inside a Next.js App Router app, especially route handlers that call `generateText`, `streamText`, or another Vercel AI SDK method that reaches a provider API.
+Use this skill when **retrofitting** Narev billing into an existing Next.js App Router app that already calls `generateText`, `streamText`, or another Vercel AI SDK method against a provider API.
+
+**Starting a new app with billing UI and Polar checkout?** Use `narev-nextjs-quickstart` instead — it covers greenfield setup with `@ai-billing/nextjs` components.
 
 For raw Pricing API lookup and cost calculation, use `narev-lookup-llm-pricing`. For committed pricing snapshots, use `narev-update-llm-pricing`.
+
+## Choose Your Path
+
+| Situation | Skill |
+|-----------|-------|
+| New app, usage dashboard, credit top-up, scaffold from zero | `narev-nextjs-quickstart` |
+| Existing Vercel AI SDK routes, centralize billing, multi-route coverage | **This skill** |
 
 ## What Do You Need?
 
@@ -104,6 +113,7 @@ Use the middleware package that matches the model provider passed to the Vercel 
 
 ## See Also
 
+- `narev-nextjs-quickstart` - Greenfield setup with `@ai-billing/nextjs` billing UI
 - `narev` - Router for Narev Cloud, SDK, and billing questions
 - `narev-lookup-llm-pricing` - Public Pricing API reference
 - `narev-update-llm-pricing` - Pin pricing snapshots into a repo

@@ -2,6 +2,8 @@
 
 Destinations receive normalized usage events. Tags make those events useful for customer billing, dashboards, debugging, and cost attribution.
 
+For greenfield Polar setup and `@ai-billing/nextjs` UI, see `narev-nextjs-quickstart`.
+
 ## Local Development
 
 Use `consoleDestination()` while wiring the route. It prints billing events without sending them to a revenue system.
