@@ -54,17 +54,19 @@ git clone https://github.com/narevai/skills ~/.claude/skills/narev
 
 ## Skills
 
+Install the **narev** plugin group to get all four skills.
+
 | Skill | Purpose | When to use |
 |-------|---------|-------------|
-| `narev` | **Overview** — picks the right skill or documentation path | Any Narev Cloud, pricing, billing, or SDK question; start here when unsure |
+| `narev-starter` | **Start here** — picks the right skill or documentation path | Any Narev Cloud, pricing, billing, or SDK question; use when unsure |
 | `narev-lookup-llm-pricing` | **Pricing API reference** — `GET` catalog, `POST` calculate, errors and contracts | Live rates, per-call cost math, endpoint behavior without committing a snapshot |
 | `narev-update-llm-pricing` | **Pin pricing in-repo** — patterns to snapshot the catalog into your codebase | Freeze rates, refresh a checked-in pricing file, offline or deterministic billing |
-| `narev-nextjs` | **Next.js billing** — greenfield setup (Polar, billed model, `@ai-billing/nextjs` UI) and brownfield retrofit (wrap existing Vercel AI SDK routes, multi-provider factories, test bypasses) | Any Next.js App Router app with Narev usage-based billing |
+| `narev-nextjs-patterns` | **Next.js billing** — greenfield setup (Polar, billed model, `@ai-billing/nextjs` UI) and brownfield retrofit (wrap existing Vercel AI SDK routes, multi-provider factories, test bypasses) | Any Next.js App Router app with Narev usage-based billing |
 
 ## Quick start
 
 1. Read the [Narev documentation](https://www.narev.ai/docs) for Cloud setup, API keys, and SDKs.
-2. Open your agent’s skills or slash commands and invoke **`narev`** first; it recommends **`narev-lookup-llm-pricing`** or **`narev-update-llm-pricing`** when the task is pricing-specific.
+2. Open your agent’s skills or slash commands and invoke **`narev-starter`** first; it recommends **`narev-lookup-llm-pricing`** or **`narev-update-llm-pricing`** when the task is pricing-specific.
 
 Example prompts:
 
@@ -73,9 +75,9 @@ Example prompts:
 | “How does the Narev pricing API work?” | `narev-lookup-llm-pricing` |
 | “Calculate USD for this token usage” | `narev-lookup-llm-pricing` |
 | “Snapshot model pricing into a JSON file in my repo” | `narev-update-llm-pricing` |
-| “Which Narev skill should I use for billing middleware?” | `narev` |
-| “Set up a new Next.js app with Narev billing and usage dashboard” | `narev-nextjs` |
-| “Add Narev billing to my existing Next.js chat route” | `narev-nextjs` |
+| “Which Narev skill should I use for billing middleware?” | `narev-starter` |
+| “Set up a new Next.js app with Narev billing and usage dashboard” | `narev-nextjs-patterns` |
+| “Add Narev billing to my existing Next.js chat route” | `narev-nextjs-patterns` |
 
 ## Repository structure
 
@@ -91,13 +93,10 @@ Example prompts:
 ├── assets/
 │   └── narev-logo.png
 ├── skills/
-│   ├── core/
-│   │   └── narev/                     # Router skill
-│   ├── frameworks/
-│   │   └── narev-nextjs/              # Next.js greenfield + brownfield billing
-│   └── pricing/
-│       ├── narev-lookup-llm-pricing/
-│       └── narev-update-llm-pricing/
+│   ├── narev-starter/
+│   ├── narev-nextjs-patterns/
+│   ├── narev-lookup-llm-pricing/
+│   └── narev-update-llm-pricing/
 ├── AGENTS.md
 ├── CLAUDE.md
 └── README.md
