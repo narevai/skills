@@ -6,7 +6,6 @@ metadata:
   author: narevai
   version: "1.1.0"
   docs: https://www.narev.ai/docs/platform/api-reference/endpoint/pricing/list-model-pricing
-  skill_group: pricing
 ---
 
 # Update LLM pricing in the local repo

@@ -22,7 +22,7 @@
   "interface": {
     "displayName": "Narev",
     "shortDescription": "Usage-based billing with Narev",
-    "longDescription": "Official Narev skills bundle for AI coding agents. Includes a router skill, pricing API skills, and a Next.js skill covering greenfield billing UI setup and brownfield Vercel AI SDK retrofit patterns.",
+    "longDescription": "Official Narev skills bundle for AI coding agents. Includes narev-starter (routing), pricing API skills, and narev-nextjs-patterns for greenfield billing UI setup and brownfield Vercel AI SDK retrofit.",
     "developerName": "Narev",
     "category": "Coding",
     "capabilities": [

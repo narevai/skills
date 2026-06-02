@@ -6,7 +6,6 @@ metadata:
   author: narevai
   version: "1.1.0"
   docs: https://www.narev.ai/docs/platform/api-reference/introduction
-  skill_group: pricing
 ---
 
 # Look up LLM pricing

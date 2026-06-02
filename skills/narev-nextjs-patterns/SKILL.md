@@ -1,16 +1,15 @@
 ---
-name: narev-nextjs
+name: narev-nextjs-patterns
 description: Next.js App Router billing with Narev — greenfield setup (packages, Polar destination, @ai-billing/nextjs usage dashboard and top-up UI) and brownfield retrofit (wrap existing generateText/streamText routes with @ai-billing provider middleware, createNarevPriceResolver, destinations, customer tags, multi-provider factories, and test bypasses). Use for any Next.js + Vercel AI SDK + Narev billing task.
 license: MIT
 compatibility: Requires Next.js App Router, Vercel AI SDK v5-compatible models, @ai-billing/core, one @ai-billing/<provider> middleware package, and server-only NAREV_API_KEY when resolving live Narev prices at runtime. Add @ai-billing/nextjs for billing UI in greenfield apps.
 metadata:
   author: narevai
-  version: "1.0.0"
+  version: "1.1.0"
   docs: https://www.narev.ai/docs/platform/billing/integrations/frameworks/nextjs
-  skill_group: frameworks
 ---
 
-# Narev Next.js
+# Narev Next.js patterns
 
 One skill for **all** Next.js App Router + Vercel AI SDK + Narev billing work. Pick the path that matches the app — both share the same middleware model.
 
@@ -123,7 +122,7 @@ Use the middleware package that matches the model provider passed to the Vercel 
 
 ## See Also
 
-- `narev` — Router for Narev Cloud, SDK, and billing questions
+- `narev-starter` — Start here for Narev Cloud, SDK, and billing questions
 - `narev-lookup-llm-pricing` — Public Pricing API reference
 - `narev-update-llm-pricing` — Pin pricing snapshots into a repo
 
