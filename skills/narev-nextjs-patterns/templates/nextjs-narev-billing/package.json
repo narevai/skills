@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ai-billing/core": "latest",
+    "@ai-billing/narev": "latest",
     "@ai-billing/openai": "latest",
     "@ai-billing/polar": "latest",
     "@ai-sdk/openai": "latest",

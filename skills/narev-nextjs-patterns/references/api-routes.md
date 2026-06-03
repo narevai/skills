@@ -7,7 +7,8 @@ Billing middleware belongs in App Router route handlers or server-only helpers u
 ```typescript
 import { createOpenAI } from '@ai-sdk/openai';
 import { createOpenAIMiddleware } from '@ai-billing/openai';
-import { consoleDestination, createNarevPriceResolver } from '@ai-billing/core';
+import { consoleDestination } from '@ai-billing/core';
+import { createNarevPriceResolver } from '@ai-billing/narev';
 import { convertToModelMessages, generateText, wrapLanguageModel } from 'ai';
 
 const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -51,7 +52,7 @@ export async function POST(request: Request) {
 ```typescript
 import { createOpenAI } from '@ai-sdk/openai';
 import { createOpenAIMiddleware } from '@ai-billing/openai';
-import { createNarevPriceResolver } from '@ai-billing/core';
+import { createNarevPriceResolver } from '@ai-billing/narev';
 import { streamText, wrapLanguageModel } from 'ai';
 
 const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY });

@@ -1,7 +1,8 @@
 import { createOpenAI } from '@ai-sdk/openai';
 import { createOpenAIMiddleware } from '@ai-billing/openai';
 import { createPolarDestination } from '@ai-billing/polar';
-import { consoleDestination, createNarevPriceResolver } from '@ai-billing/core';
+import { consoleDestination } from '@ai-billing/core';
+import { createNarevPriceResolver } from '@ai-billing/narev';
 import { convertToModelMessages, streamText, type UIMessage, wrapLanguageModel } from 'ai';
 
 const openai = createOpenAI({

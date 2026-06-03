@@ -8,7 +8,7 @@
       "scaffold": null,
       "files": [],
       "expectations": [
-        "Installs or references @ai-billing/core, @ai-billing/openai, @ai-billing/polar, and @ai-billing/nextjs",
+        "Installs or references @ai-billing/core, @ai-billing/narev, @ai-billing/openai, @ai-billing/polar, and @ai-billing/nextjs",
         "Creates lib/destinations.ts with createPolarDestination and externalCustomerIdKey userId",
         "Creates lib/billing.ts with createOpenAIMiddleware and createNarevPriceResolver",
         "Exports a wrapped billedModel using wrapLanguageModel",
@@ -51,7 +51,7 @@
       "expectations": [
         "Imports wrapLanguageModel from ai or uses a helper that calls wrapLanguageModel",
         "Imports createOpenAIMiddleware from @ai-billing/openai",
-        "Imports createNarevPriceResolver and consoleDestination from @ai-billing/core",
+        "Imports createNarevPriceResolver from @ai-billing/narev and consoleDestination from @ai-billing/core",
         "Reads NAREV_API_KEY only from server-side code",
         "Passes the wrapped model, not the raw OpenAI model, to streamText"
       ]
@@ -121,7 +121,7 @@
       "expectations": [
         "Imports createGroq from @ai-sdk/groq",
         "Imports createGroqMiddleware from @ai-billing/groq",
-        "Uses createNarevPriceResolver with NAREV_API_KEY",
+        "Imports createNarevPriceResolver from @ai-billing/narev and uses NAREV_API_KEY",
         "Wraps groq('llama-3.3-70b-versatile') with Groq billing middleware",
         "Does not reuse OpenAI billing middleware for the Groq model"
       ]

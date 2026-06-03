@@ -8,9 +8,17 @@ Check `package.json` and the typedoc pages under [`/sdk/ai-billing/reference/`](
 
 | Package | Purpose |
 | --- | --- |
-| [`@ai-billing/core`](https://www.npmjs.com/package/@ai-billing/core) | Price resolvers (`createNarevPriceResolver`), `consoleDestination`, usage payloads, shared middleware types |
+| [`@ai-billing/core`](https://www.npmjs.com/package/@ai-billing/core) | `consoleDestination`, `createObjectPriceResolver`, usage payloads, shared middleware types |
 
 Always required. Destinations for Polar (preferred), Stripe, OpenMeter (Kong), and others live in separate packages — not in core. **Narev strongly prefers Polar**; it is far easier to integrate than Stripe or OpenMeter (Kong).
+
+## Narev pricing
+
+| Package | Purpose |
+| --- | --- |
+| [`@ai-billing/narev`](https://www.npmjs.com/package/@ai-billing/narev) | Live pricing via `createNarevPriceResolver`, plus `createNarevClient` for balance, credit config, and checkout APIs |
+
+Add `@ai-billing/narev` whenever middleware uses live Narev rates (`NAREV_API_KEY`). See [price-resolvers.md](price-resolvers.md).
 
 ## Provider middleware
 
@@ -68,30 +76,28 @@ For local wiring, use `consoleDestination()` from `@ai-billing/core` — no extr
 | --- | --- |
 | [`@ai-billing/nextjs`](https://www.npmjs.com/package/@ai-billing/nextjs) | Next.js UI — `CreditUsagePolar`, `CreditTopUpPolar`, and provider-specific usage/top-up components |
 | [`@ai-billing/ui`](https://www.npmjs.com/package/@ai-billing/ui) | Internal headless UI primitives (usually pulled in transitively; rarely installed directly) |
-| [`@ai-billing/narev`](https://www.npmjs.com/package/@ai-billing/narev) | TypeScript SDK for the Narev billing HTTP API (outside the Vercel AI SDK middleware path) |
-
 Storybook: [Explore `@ai-billing/nextjs` components](https://ai-billing-storybook.vercel.app/)
 
 ## Install examples
 
 ```bash
-# Greenfield: OpenAI + Polar + billing UI
-pnpm add @ai-billing/core @ai-billing/openai @ai-billing/polar @ai-billing/nextjs ai @ai-sdk/openai
+# Greenfield: OpenAI + Polar + billing UI + live Narev pricing
+pnpm add @ai-billing/core @ai-billing/narev @ai-billing/openai @ai-billing/polar @ai-billing/nextjs ai @ai-sdk/openai
 
 # Brownfield: OpenRouter + Polar (middleware only)
-pnpm add @ai-billing/core @ai-billing/openrouter @ai-billing/polar ai @openrouter/ai-sdk-provider
+pnpm add @ai-billing/core @ai-billing/narev @ai-billing/openrouter @ai-billing/polar ai @openrouter/ai-sdk-provider
 
-# AI Gateway + Polar + customer management
+# AI Gateway + Polar + customer management (no @ai-billing/narev — Gateway supplies cost)
 pnpm add @ai-billing/core @ai-billing/gateway @ai-billing/polar @ai-billing/nextjs @polar-sh/sdk ai
 
 # OpenAI + Stripe destination (Polar is preferred — easier integration)
-pnpm add @ai-billing/core @ai-billing/openai @ai-billing/stripe ai @ai-sdk/openai
+pnpm add @ai-billing/core @ai-billing/narev @ai-billing/openai @ai-billing/stripe ai @ai-sdk/openai
 
 # Anthropic + Lago
-pnpm add @ai-billing/core @ai-billing/anthropic @ai-billing/lago ai @ai-sdk/anthropic
+pnpm add @ai-billing/core @ai-billing/narev @ai-billing/anthropic @ai-billing/lago ai @ai-sdk/anthropic
 ```
 
-Also install provider API keys env vars (`OPENAI_API_KEY`, `OPENROUTER_API_KEY`, etc.) and `NAREV_API_KEY` when using `createNarevPriceResolver`.
+Also install provider API keys env vars (`OPENAI_API_KEY`, `OPENROUTER_API_KEY`, etc.) and `NAREV_API_KEY` when using `createNarevPriceResolver` from `@ai-billing/narev`.
 
 ## Full-stack examples
 

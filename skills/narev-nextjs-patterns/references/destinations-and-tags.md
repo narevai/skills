@@ -21,7 +21,8 @@ For greenfield Polar setup and `@ai-billing/nextjs` UI, see [polar-setup.md](pol
 Use `consoleDestination()` while wiring the route. It prints billing events without sending them to a revenue system.
 
 ```typescript
-import { consoleDestination, createNarevPriceResolver } from '@ai-billing/core';
+import { consoleDestination } from '@ai-billing/core';
+import { createNarevPriceResolver } from '@ai-billing/narev';
 import { createOpenAIMiddleware } from '@ai-billing/openai';
 
 const billingMiddleware = createOpenAIMiddleware({
@@ -35,7 +36,7 @@ const billingMiddleware = createOpenAIMiddleware({
 ## Polar Destination
 
 ```typescript
-import { createNarevPriceResolver } from '@ai-billing/core';
+import { createNarevPriceResolver } from '@ai-billing/narev';
 import { createOpenAIMiddleware } from '@ai-billing/openai';
 import { createPolarDestination } from '@ai-billing/polar';
 

@@ -23,7 +23,8 @@ Factory names may differ by SDK version — confirm exports in the installed pac
 ```typescript
 import { createOpenAI } from '@ai-sdk/openai';
 import { createOpenAIMiddleware } from '@ai-billing/openai';
-import { consoleDestination, createNarevPriceResolver } from '@ai-billing/core';
+import { consoleDestination } from '@ai-billing/core';
+import { createNarevPriceResolver } from '@ai-billing/narev';
 import { wrapLanguageModel } from 'ai';
 
 const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -73,7 +74,8 @@ export function getModel(modelId: string) {
 ```typescript
 import { createGroq } from '@ai-sdk/groq';
 import { createGroqMiddleware } from '@ai-billing/groq';
-import { consoleDestination, createNarevPriceResolver } from '@ai-billing/core';
+import { consoleDestination } from '@ai-billing/core';
+import { createNarevPriceResolver } from '@ai-billing/narev';
 import { wrapLanguageModel } from 'ai';
 
 const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });

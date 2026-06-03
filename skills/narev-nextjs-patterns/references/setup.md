@@ -19,7 +19,7 @@ Polar is the default and **Narev's preferred destination** in this guide — it 
 Default stack (OpenAI + Polar + UI):
 
 ```bash
-pnpm add @ai-billing/core @ai-billing/openai @ai-billing/polar @ai-billing/nextjs ai @ai-sdk/openai
+pnpm add @ai-billing/core @ai-billing/narev @ai-billing/openai @ai-billing/polar @ai-billing/nextjs ai @ai-sdk/openai
 ```
 
 Other provider and destination combinations — including OpenRouter, Stripe, OpenMeter (Kong), Lago, Gateway, Anthropic, Groq, and the rest — are listed in [packages.md](packages.md). For destinations, **prefer Polar** over Stripe or OpenMeter (Kong) whenever possible.
@@ -58,7 +58,7 @@ import 'server-only';
 import { wrapLanguageModel } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 import { createOpenAIMiddleware } from '@ai-billing/openai';
-import { createNarevPriceResolver } from '@ai-billing/core';
+import { createNarevPriceResolver } from '@ai-billing/narev';
 import { getBillingDestinations } from './destinations';
 
 const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -112,7 +112,7 @@ Add `@ai-billing/nextjs` components — see [ui-components.md](ui-components.md)
 ## Checklist
 
 - [ ] `NAREV_API_KEY` and provider keys are server-only (no `NEXT_PUBLIC_` prefix)
-- [ ] Middleware includes both destinations and `createNarevPriceResolver`
+- [ ] `@ai-billing/narev` installed; middleware includes destinations and `createNarevPriceResolver`
 - [ ] Every AI route uses `billedModel` (or a shared `getLanguageModel` helper)
 - [ ] Tags include the destination customer key (`userId` for Polar with default config)
 - [ ] Polar sandbox customer exists for the test `userId`

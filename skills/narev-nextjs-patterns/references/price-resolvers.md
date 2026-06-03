@@ -1,18 +1,24 @@
 # Price Resolvers
 
-Use `createNarevPriceResolver()` when billing middleware needs runtime model prices from Narev.
+Use `createNarevPriceResolver()` from **`@ai-billing/narev`** when billing middleware needs live model prices from Narev. Static or pinned rates use `createObjectPriceResolver()` from `@ai-billing/core` (see `narev-update-llm-pricing`).
 
 ```typescript
-import { createNarevPriceResolver } from '@ai-billing/core';
+import { createNarevPriceResolver } from '@ai-billing/narev';
 
 const priceResolver = createNarevPriceResolver({
   apiKey: process.env.NAREV_API_KEY ?? '',
 });
 ```
 
+Install the Narev package alongside core and your provider middleware:
+
+```bash
+pnpm add @ai-billing/narev
+```
+
 ## Runtime Pricing vs Pricing API
 
-- Runtime app billing: use `createNarevPriceResolver()` inside the `@ai-billing/*` middleware (uses your `NAREV_API_KEY` against `https://api.narev.ai`).
+- Runtime app billing: use `createNarevPriceResolver()` from `@ai-billing/narev` inside the `@ai-billing/*` middleware (uses your `NAREV_API_KEY` against `https://api.narev.ai`).
 - One-off lookup or cost calculation: use `narev-lookup-llm-pricing` (`GET /v1/price/...`, `POST https://api.narev.ai/v1/calculate` — public, no key).
 - Committed offline rates: use `narev-update-llm-pricing` (paginate `GET https://api.narev.ai/v1/price/search` or per-provider price).
 

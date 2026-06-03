@@ -2,10 +2,10 @@
 name: narev-nextjs-patterns
 description: Next.js App Router billing with Narev — greenfield setup (packages, Polar destination, @ai-billing/nextjs usage dashboard and top-up UI) and brownfield retrofit (wrap existing generateText/streamText routes with @ai-billing provider middleware, createNarevPriceResolver, destinations, customer tags, multi-provider factories, and test bypasses). Use for any Next.js + Vercel AI SDK + Narev billing task.
 license: MIT
-compatibility: Requires Next.js App Router, Vercel AI SDK v5-compatible models, @ai-billing/core, one @ai-billing/<provider> middleware package, and server-only NAREV_API_KEY when resolving live Narev prices at runtime. Add @ai-billing/nextjs for billing UI in greenfield apps.
+compatibility: Requires Next.js App Router, Vercel AI SDK v5-compatible models, @ai-billing/core, one @ai-billing/<provider> middleware package, @ai-billing/narev (createNarevPriceResolver) when resolving live Narev prices at runtime, and server-only NAREV_API_KEY. Add @ai-billing/nextjs for billing UI in greenfield apps.
 metadata:
   author: narevai
-  version: "1.2.0"
+  version: "1.3.0"
   docs: https://www.narev.ai/docs/platform/billing/integrations/frameworks/nextjs
 ---
 
@@ -45,7 +45,7 @@ Narev billing lives on the server, next to the AI provider call:
 
 1. Create the provider model with `@ai-sdk/<provider>`.
 2. Create a provider-specific `@ai-billing/<provider>` middleware.
-3. Give that middleware a `createNarevPriceResolver()` when it needs live Narev rates.
+3. Give that middleware `createNarevPriceResolver()` from `@ai-billing/narev` when it needs live Narev rates.
 4. Add one or more destinations — **prefer `@ai-billing/polar`** (Narev's recommended choice; far easier than Stripe or OpenMeter/Kong) — or `consoleDestination()` while developing.
 5. Wrap the language model with `wrapLanguageModel()` before passing it to `generateText` or `streamText`.
 6. Add `providerOptions['ai-billing-tags']` with stable customer, user, organization, chat, or plan identifiers.
@@ -65,7 +65,7 @@ To pick a host: use `narev-lookup-llm-pricing` (`GET /v1/find/cheapest/{model_id
 ## Greenfield Flow
 
 1. Create Narev Cloud and billing provider credentials (`NAREV_API_KEY`, `POLAR_ACCESS_TOKEN`, etc.).
-2. Install `@ai-billing/core`, one `@ai-billing/<provider>` middleware package, one destination package (**prefer `@ai-billing/polar`**), `@ai-billing/nextjs`, `ai`, and the matching AI SDK provider — see [references/packages.md](references/packages.md).
+2. Install `@ai-billing/core`, `@ai-billing/narev`, one `@ai-billing/<provider>` middleware package, one destination package (**prefer `@ai-billing/polar`**), `@ai-billing/nextjs`, `ai`, and the matching AI SDK provider — see [references/packages.md](references/packages.md).
 3. Configure a billing destination in `lib/destinations.ts`.
 4. Create a server-only billed model helper in `lib/billing.ts`.
 5. Call `streamText` (or `generateText`) with the wrapped model and `providerOptions['ai-billing-tags']`.
@@ -98,7 +98,7 @@ export async function POST(req: Request) {
 }
 ```
 
-Always include `createNarevPriceResolver({ apiKey: process.env.NAREV_API_KEY })` in the billing middleware — destinations emit usage; the resolver attaches Narev model cost.
+Always include `createNarevPriceResolver({ apiKey: process.env.NAREV_API_KEY })` from `@ai-billing/narev` in the billing middleware — destinations emit usage; the resolver attaches Narev model cost.
 
 ## Common Pitfalls
 
@@ -106,9 +106,9 @@ Always include `createNarevPriceResolver({ apiKey: process.env.NAREV_API_KEY })`
 |---------|-------|-----|
 | Usage dashboard empty | Tags missing or `userId` mismatch with Polar customer | Align `externalCustomerIdKey` with tag name; verify sandbox customer exists |
 | Usage is not recorded | Raw provider model passed to `generateText` / `streamText` | Pass the `wrapLanguageModel()` result |
-| No cost on events | Missing `createNarevPriceResolver` | Add resolver to middleware in `lib/billing.ts` |
+| No cost on events | Missing `createNarevPriceResolver` | Add `@ai-billing/narev` and wire `createNarevPriceResolver` in `lib/billing.ts` |
 | Secret leaks into browser bundle | Billing code imported by a Client Component | Keep billing setup in route handlers or server-only modules |
-| Model cost is missing or wrong | No `priceResolver`, wrong provider middleware, or mismatched model ID | Use the provider-specific middleware and `createNarevPriceResolver()` |
+| Model cost is missing or wrong | No `priceResolver`, wrong import package, wrong provider middleware, or mismatched model ID | Import `createNarevPriceResolver` from `@ai-billing/narev`; match middleware to provider |
 | Usage cannot be attributed | Missing tags | Set `providerOptions['ai-billing-tags']` with stable customer identifiers |
 | Tests fail or emit billing events | Middleware initialized during tests | Return the raw model in test environments |
 | Unbilled generations | Raw model passed to `streamText` | Export a pre-wrapped `billedModel` from `lib/billing.ts` and use it everywhere |
@@ -123,6 +123,7 @@ Always install `@ai-billing/core` plus the provider and destination packages you
 | Layer | Packages |
 | --- | --- |
 | Core | `@ai-billing/core` |
+| Live Narev pricing | `@ai-billing/narev` (`createNarevPriceResolver`) |
 | Provider middleware (pick one per provider) | `@ai-billing/openrouter`, `@ai-billing/openai`, `@ai-billing/gateway`, `@ai-billing/openai-compatible`, `@ai-billing/groq`, `@ai-billing/google`, `@ai-billing/anthropic`, `@ai-billing/xai`, `@ai-billing/minimax`, `@ai-billing/deepseek`, `@ai-billing/chutes` |
 | Destinations (prefer `@ai-billing/polar`) | `@ai-billing/polar`, `@ai-billing/stripe`, `@ai-billing/openmeter`, `@ai-billing/lago` |
 | Next.js UI (greenfield) | `@ai-billing/nextjs` |
