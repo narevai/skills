@@ -4,10 +4,10 @@
     {
       "id": 1,
       "prompt": "what's the current input and output token price for gpt-4o on openai? i need usd per million tokens for a slide deck",
-      "expected_output": "GET https://www.narev.ai/api/models/pricing with model_id and provider filters; explain rates are USD per token; convert to per-million for display",
+      "expected_output": "GET https://api.narev.ai/models/pricing with model_id and provider filters; explain rates are USD per token; convert to per-million for display",
       "files": [],
       "expectations": [
-        "Uses GET https://www.narev.ai/api/models/pricing (or equivalent path /api/models/pricing)",
+        "Uses GET https://api.narev.ai/models/pricing (or equivalent path /models/pricing)",
         "Filters with model_id=gpt-4o and provider=openai",
         "States that Narev returns USD per token (not per 1K or 1M)",
         "References price_prompt and price_completion (or equivalent input/output fields) from the response",
@@ -17,10 +17,10 @@
     {
       "id": 2,
       "prompt": "i have 1200 prompt tokens and 400 completion tokens on claude-sonnet-4 from anthropic. how much did that one call cost in usd?",
-      "expected_output": "POST /api/models/pricing/calculate with modelId, provider, usage integers including zeros for unused categories; report costBreakdown.total",
+      "expected_output": "POST /models/pricing/calculate with modelId, provider, usage integers including zeros for unused categories; report costBreakdown.total",
       "files": [],
       "expectations": [
-        "Uses POST https://www.narev.ai/api/models/pricing/calculate",
+        "Uses POST https://api.narev.ai/models/pricing/calculate",
         "Includes Content-Type: application/json",
         "Sets modelId to a plausible Claude Sonnet 4 id and provider to anthropic",
         "Includes usage with promptTokens 1200, completionTokens 400, and explicit 0 for cacheReadTokens, cacheWriteTokens, reasoningTokens (or states all required integers must be present)",
@@ -34,7 +34,7 @@
       "files": [],
       "expectations": [
         "Mentions that the same model_id can differ by host (e.g. bedrock, openrouter, together)",
-        "Recommends GET /api/models/pricing to discover valid provider/subprovider combinations",
+        "Recommends GET /models/pricing to discover valid provider/subprovider combinations",
         "States that calculate requests need subprovider when the model is served by multiple subproviders",
         "Does not claim an API key is required for these public endpoints"
       ]
@@ -48,7 +48,7 @@
         "Associates 400 Bad Request with usage validation",
         "Lists required usage fields: promptTokens, completionTokens, cacheReadTokens, cacheWriteTokens, reasoningTokens",
         "Says to pass 0 for unused categories rather than omitting or using null",
-        "References POST /api/models/pricing/calculate"
+        "References POST /models/pricing/calculate"
       ]
     },
     {
@@ -70,7 +70,7 @@
       "expectations": [
         "Warns against hardcoding rates or treating a one-off scrape as the long-term source of truth",
         "Points to update-llm-pricing (or equivalent) for committing catalog snapshots / generator workflows",
-        "May still mention GET /api/models/pricing as the live catalog source"
+        "May still mention GET /models/pricing as the live catalog source"
       ]
     }
   ]

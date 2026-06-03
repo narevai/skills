@@ -13,12 +13,12 @@ metadata:
 
 This skill is the **in-repo API reference** for the Narev Cloud Pricing endpoints (same behavior as `/platform/api-reference/endpoint/pricing/...`, tightened for agents). Use it for contracts and workflows; for **patterns that write the catalog into the repo**, see `update-llm-pricing`.
 
-Two endpoints, both under `https://www.narev.ai`.
+Two public endpoints on `https://api.narev.ai` (no API key required).
 
-| Endpoint                        | Method | Purpose                                                                                 |
-| ------------------------------- | ------ | --------------------------------------------------------------------------------------- |
-| `/api/models/pricing`           | `GET`  | List the catalog. Filter by `model_id`, `search`, `provider`, `subprovider`. Paginated. |
-| `/api/models/pricing/calculate` | `POST` | Compute the USD cost of one call given `modelId`, `provider`, and a `usage` object.     |
+| Endpoint                     | Method | Purpose                                                                                 |
+| ---------------------------- | ------ | --------------------------------------------------------------------------------------- |
+| `/models/pricing`            | `GET`  | List the catalog. Filter by `model_id`, `search`, `provider`, `subprovider`. Paginated. |
+| `/models/pricing/calculate`  | `POST` | Compute the USD cost of one call given `modelId`, `provider`, and a `usage` object.     |
 
 Token rates are USD per token (not per 1K, not per 1M).
 
@@ -46,7 +46,7 @@ The pricing endpoints are public. No API key, bearer token, or authentication he
 2. Call the listing endpoint:
 
    ```bash
-   curl -G 'https://www.narev.ai/api/models/pricing' \
+   curl -G 'https://api.narev.ai/models/pricing' \
      --data-urlencode 'model_id=gpt-4o' \
      --data-urlencode 'provider=openai'
    ```
@@ -72,7 +72,7 @@ The pricing endpoints are public. No API key, bearer token, or authentication he
 2. POST the request:
 
    ```bash
-   curl -X POST 'https://www.narev.ai/api/models/pricing/calculate' \
+   curl -X POST 'https://api.narev.ai/models/pricing/calculate' \
      -H 'Content-Type: application/json' \
      -d '{
        "modelId": "gpt-4o",

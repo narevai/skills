@@ -11,7 +11,7 @@ metadata:
 
 # Update LLM pricing in the local repo
 
-This skill is **not** a second API spec — it describes **what you can implement** using the **listing** API that `lookup-llm-pricing` documents (`GET https://www.narev.ai/api/models/pricing`): paginate, map each row to **your** schema, and write a committed file. For path/query/body contracts, `402`/`404`, and **`POST` calculate**, use `lookup-llm-pricing`. You do **not** need the Narev SDK or Vercel AI SDK — any HTTP client and file I/O in the repo's language is enough.
+This skill is **not** a second API spec — it describes **what you can implement** using the **listing** API that `lookup-llm-pricing` documents (`GET https://api.narev.ai/models/pricing`): paginate, map each row to **your** schema, and write a committed file. For path/query/body contracts, `402`/`404`, and **`POST` calculate**, use `lookup-llm-pricing`. You do **not** need the Narev SDK or Vercel AI SDK — any HTTP client and file I/O in the repo's language is enough.
 
 ## When to use this skill
 
@@ -103,7 +103,7 @@ Providers, model subset (if any), output path, and whether units are per token o
 
 ### 2. Add or update a snapshot script
 
-Use the repo's language and dependencies (`fetch` / `httpx` / `requests` / `urllib`). Paginate `GET https://www.narev.ai/api/models/pricing`. Transform into the local schema. Prefer idempotent writes and small, reviewable diffs.
+Use the repo's language and dependencies (`fetch` / `httpx` / `requests` / `urllib`). Paginate `GET https://api.narev.ai/models/pricing`. Transform into the local schema. Prefer idempotent writes and small, reviewable diffs.
 
 ### 3. Run it
 

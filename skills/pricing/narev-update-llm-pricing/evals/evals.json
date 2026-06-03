@@ -4,10 +4,10 @@
     {
       "id": 1,
       "prompt": "we need to regenerate our committed model pricing file from narev so billing runs offline. what's the right approach?",
-      "expected_output": "Use GET https://www.narev.ai/api/models/pricing; paginate; map rows to local schema; write the target file; optional provider filter; no API key",
+      "expected_output": "Use GET https://api.narev.ai/models/pricing; paginate; map rows to local schema; write the target file; optional provider filter; no API key",
       "files": [],
       "expectations": [
-        "Uses GET https://www.narev.ai/api/models/pricing (or equivalent /api/models/pricing) as the catalog source, not POST calculate for bulk snapshots",
+        "Uses GET https://api.narev.ai/models/pricing (or equivalent /models/pricing) as the catalog source, not POST calculate for bulk snapshots",
         "Describes pagination with page and limit (mentions limit up to 1000 or paginate until done)",
         "States that no API key or bearer token is required for the public listing endpoint",
         "Mentions confirming target path, format, and provider scope before overwriting",
@@ -62,7 +62,7 @@
     },
     {
       "id": 6,
-      "prompt": "i only need the exact json body rules and http codes for POST /api/models/pricing/calculate. which skill should i follow?",
+      "prompt": "i only need the exact json body rules and http codes for POST /models/pricing/calculate. which skill should i follow?",
       "expected_output": "Defer calculate contract, 402, and 404 details to lookup-llm-pricing; update skill covers listing and committed snapshots",
       "files": [],
       "expectations": [
