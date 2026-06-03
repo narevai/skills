@@ -105,6 +105,10 @@ The pricing endpoints are public. No API key, bearer token, or authentication he
 
 ## Reference
 
-- API overview: `/platform/api-reference/introduction`
-- List endpoint: `/platform/api-reference/endpoint/pricing/list-model-pricing`
-- Calculate endpoint: `/platform/api-reference/endpoint/pricing/calculate-cost-for-a-model-call`
+- API base: `https://api.narev.ai`
+- List catalog (public): `GET https://api.narev.ai/models/pricing`
+- Calculate cost (public): `POST https://api.narev.ai/models/pricing/calculate`
+- Authenticated list (same query params, requires `Authorization: Bearer` + `NAREV_API_KEY`): `GET https://api.narev.ai/v1/models/pricing`
+- Docs — API overview: https://www.narev.ai/docs/platform/api-reference/introduction
+- Docs — list endpoint: https://www.narev.ai/docs/platform/api-reference/endpoint/pricing/list-model-pricing
+- Docs — calculate endpoint: https://www.narev.ai/docs/platform/api-reference/endpoint/pricing/calculate-cost-for-a-model-call

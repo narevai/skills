@@ -127,7 +127,7 @@ CI on a schedule that runs the script and opens a PR keeps rates fresh with huma
 
 ## Reference
 
-- List pricing API: `/platform/api-reference/endpoint/pricing/list-model-pricing`
+- List pricing API (public): `GET https://api.narev.ai/models/pricing` — docs: https://www.narev.ai/docs/platform/api-reference/endpoint/pricing/list-model-pricing
 - SDK overview (optional): `/sdk/ai-billing/index`
 - `createObjectPriceResolver`: `/sdk/ai-billing/reference/core/typedoc/functions/createObjectPriceResolver`
 - `createNarevPriceResolver` (live): `/sdk/ai-billing/reference/core/typedoc/functions/createNarevPriceResolver`
