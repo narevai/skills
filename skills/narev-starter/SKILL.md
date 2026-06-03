@@ -69,13 +69,13 @@ Check `package.json` (and the lockfile if versions disagree) for `@ai-billing/co
 
 **Model pricing (API reference)** → Use `narev-lookup-llm-pricing`
 
-- **Base URL:** `https://api.narev.ai` — public `GET /models/pricing` (filters, pagination) and `POST /models/pricing/calculate` for one call's USD total — no API key, no committed files.
-- **Semantics:** USD per token, required `usage` integers, when **`subprovider`** is required for the same `model_id` on different hosts.
-- **Contracts and troubleshooting:** request/response shapes, `402` / `404` / `400`, and the canonical spec at [list-model-pricing](https://narev.ai/docs/platform/api-reference/endpoint/pricing/list-model-pricing) and [calculate-cost-for-a-model-call](https://narev.ai/docs/platform/api-reference/endpoint/pricing/calculate-cost-for-a-model-call).
+- **Pricing API** on `https://api.narev.ai` (public, no Bearer) — **seven endpoints only** (see lookup skill): reference providers/models, `GET /v1/price/{provider_id}`, `GET /v1/price/search`, `GET /v1/find/cheapest/{model_id}`, `POST /v1/calculate`.
+- **Rates:** `pricing.prompt` / `pricing.completion` (USD per token). **One-call USD:** `POST /v1/calculate`. Do not use legacy `POST /models/pricing/calculate` or `GET /v1/models/pricing`.
+- **Docs:** [API introduction](https://narev.ai/docs/platform/api-reference/introduction), [calculate](https://narev.ai/docs/platform/api-reference/endpoint/pricing/calculate-cost-for-a-model-call).
 
 **Model pricing (snapshots and automation)** → Use `narev-update-llm-pricing`
 
-- **Pin rates in-repo:** paginate `GET https://api.narev.ai/models/pricing`, map each row into **your** schema, write a tracked file or generated module for offline or deterministic billing.
+- **Consumes lookup output:** paginate `GET /v1/price/search` or `GET /v1/price/{provider_id}`, map `pricing.*` into **your** schema, write a tracked file.
 - **Implementation choices:** merge vs replace, provider/model scope, unit conversion (API per token vs local per-1M), keys for multi-provider models.
 - **Ops:** idempotent scripts, readable diffs, optional CI or scheduled refresh; use **`narev-lookup-llm-pricing`** for `POST` calculate and fine-grained HTTP/error details.
 

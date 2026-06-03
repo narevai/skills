@@ -1,114 +1,186 @@
 ---
 name: narev-lookup-llm-pricing
-description: 'Current LLM prices. How to use the Narev API endpoints — list model pricing (GET) and calculate call cost (POST). Use when the user needs endpoint behavior, parameters, responses, or errors; real-time per-token rates; token-to-USD math for one call; or when they mention "Narev pricing", "model rates", "USD per token", "cost calculation", or "AI unit economics". For committing catalog snapshots or generator scripts, use update-llm-pricing.'
+description: 'Narev pricing API on https://api.narev.ai — seven public endpoints only: reference providers/models, price by provider, price search, find cheapest, and POST /v1/calculate. No Bearer token. For pinning rates into the repo, use update-llm-pricing.'
 license: MIT
 metadata:
   author: narevai
-  version: "1.1.0"
+  version: "1.4.0"
   docs: https://www.narev.ai/docs/platform/api-reference/introduction
 ---
 
 # Look up LLM pricing
 
-This skill is the **in-repo API reference** for the Narev Cloud Pricing endpoints (same behavior as `/platform/api-reference/endpoint/pricing/...`, tightened for agents). Use it for contracts and workflows; for **patterns that write the catalog into the repo**, see `update-llm-pricing`.
+Reference for the **only** Narev pricing HTTP endpoints agents should use. Base URL: `https://api.narev.ai`. All are **public** (no `Authorization: Bearer` or `NAREV_API_KEY`).
 
-Two public endpoints on `https://api.narev.ai` (no API key required).
+Rates in price responses are **USD per token** (not per 1K or 1M). For **committed snapshots**, use `update-llm-pricing`.
 
-| Endpoint                     | Method | Purpose                                                                                 |
-| ---------------------------- | ------ | --------------------------------------------------------------------------------------- |
-| `/models/pricing`            | `GET`  | List the catalog. Filter by `model_id`, `search`, `provider`, `subprovider`. Paginated. |
-| `/models/pricing/calculate`  | `POST` | Compute the USD cost of one call given `modelId`, `provider`, and a `usage` object.     |
+## Endpoints (exhaustive list)
 
-Token rates are USD per token (not per 1K, not per 1M).
+Do **not** call `GET /v1/models/pricing`, `GET /models/pricing`, `POST /models/pricing/calculate`, `POST /v1/models/pricing/calculate`, or any other path not listed here.
+
+**Discovery**
+
+- `GET https://api.narev.ai/v1/reference/providers` — all providers (`provider_id`, `name`).
+- `GET https://api.narev.ai/v1/reference/providers/{provider_id}` — one provider (`base_url`, `pricing_url`, `logo_url`, …). **404** if unknown.
+- `GET https://api.narev.ai/v1/reference/models` — model IDs per provider. Query: `provider_ids` (comma-separated), `page`, `page_size` (max `1000`).
+
+**Rates**
+
+- `GET https://api.narev.ai/v1/price/{provider_id}` — pricing for models on that provider. Query: `model_id`, `page`, `page_size`.
+- `GET https://api.narev.ai/v1/price/search` — search pricing by model ID. Query: `q`, `page`, `page_size`.
+- `GET https://api.narev.ai/v1/find/cheapest/{model_id}` — every provider that serves this model, sorted cheapest `pricing.prompt` first. Query: `page`, `page_size`.
+
+**Calculate**
+
+- `POST https://api.narev.ai/v1/calculate` — USD total for one call (`modelId`, `provider`, `usage`; optional `subprovider`, `isByok`, `webSearchCount`).
+
+## Typical flow
+
+1. **Which providers exist?** → `GET /v1/reference/providers`
+2. **Which models exist?** → `GET /v1/reference/models` (optionally `provider_ids=openai,anthropic`)
+3. **What are the token rates?**
+   - One provider: `GET /v1/price/openai?model_id=gpt-4o`
+   - Search by name: `GET /v1/price/search?q=gpt-4`
+   - Compare hosts for one model: `GET /v1/find/cheapest/claude-sonnet-4-20250514`
+4. **What did this call cost in USD?** → `POST /v1/calculate` with token counts
+
+Paginate price and reference list endpoints while `page <= meta.total_pages`.
+
+## Price response shape
+
+`GET /v1/price/*` and `GET /v1/find/cheapest/*` return:
+
+```json
+{
+  "data": [
+    {
+      "model_id": "gpt-4o",
+      "provider_id": "openai",
+      "pricing": {
+        "prompt": 0.0000025,
+        "completion": 0.00001,
+        "discount": 0,
+        "request": 0,
+        "web_search": 0,
+        "input_cache_read": 0.00000125,
+        "input_cache_write": 0,
+        "internal_reasoning": 0
+      }
+    }
+  ],
+  "meta": { "page": 1, "page_size": 100, "total": 179, "total_pages": 2 }
+}
+```
+
+- **`pricing.prompt`** — USD per input token. **`pricing.completion`** — USD per output token.
+- Also: `discount` (fraction `0`–`1`), `request`, `web_search`, `input_cache_read`, `input_cache_write`, `internal_reasoning`, and image/audio fields when applicable.
+- Empty `data` is valid (e.g. no public pricing for that `model_id` on find/cheapest).
+- Per-million display: multiply `prompt` / `completion` by `1_000_000`.
+- For `POST /v1/calculate`, pass `provider_id` from the row as the JSON field **`provider`** (e.g. `"openai"`).
+
+**Reference providers** — `{ "data": [ { "provider_id": "openai", "name": "OpenAI" }, … ] }`
+
+**Reference models** — `{ "data": [ { "provider_id": "openai", "model_id": "gpt-4o" }, … ], "meta": { … } }`
+
+---
+
+## `GET /v1/reference/providers`
+
+```bash
+curl 'https://api.narev.ai/v1/reference/providers'
+```
+
+---
+
+## `GET /v1/reference/providers/{provider_id}`
+
+```bash
+curl 'https://api.narev.ai/v1/reference/providers/openai'
+```
+
+---
+
+## `GET /v1/reference/models`
+
+```bash
+curl -G 'https://api.narev.ai/v1/reference/models' \
+  --data-urlencode 'provider_ids=openai,anthropic' \
+  --data-urlencode 'page=1' \
+  --data-urlencode 'page_size=100'
+```
+
+---
+
+## `GET /v1/price/{provider_id}`
+
+```bash
+curl -G 'https://api.narev.ai/v1/price/openai' \
+  --data-urlencode 'model_id=gpt-4o'
+```
+
+---
+
+## `GET /v1/price/search`
+
+```bash
+curl -G 'https://api.narev.ai/v1/price/search' \
+  --data-urlencode 'q=gpt-4' \
+  --data-urlencode 'page=1' \
+  --data-urlencode 'page_size=100'
+```
+
+Omit `q` or use a broad fragment to page through the catalog (see `meta.total_pages`).
+
+---
+
+## `GET /v1/find/cheapest/{model_id}`
+
+```bash
+curl 'https://api.narev.ai/v1/find/cheapest/gpt-4o'
+```
+
+Use an exact `model_id` from reference/models or price/search. Results sort by `pricing.prompt` ascending.
+
+---
+
+## `POST /v1/calculate`
+
+Given `modelId`, `provider`, and token `usage`, returns an itemized USD breakdown. Replaces legacy `POST /models/pricing/calculate`.
+
+```bash
+curl -X POST 'https://api.narev.ai/v1/calculate' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "modelId": "gpt-4o",
+    "provider": "openai",
+    "subprovider": "OpenAI",
+    "usage": {
+      "promptTokens": 1000,
+      "completionTokens": 500,
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "reasoningTokens": 0
+    }
+  }'
+```
+
+**200:** `costBreakdown.total` (report to the user), plus `pricing` (`input`, `output`, `request`, `inputCacheRead`, `inputCacheWrite`, `internalReasoning`, `webSearch`), echoed `usage`, `modelId`, `provider`, `subprovider`.
+
+**Errors:** `400` — usage validation (all five usage integers required; use `0` if unused). `402` — enterprise-only (`pricing: null`, `error` set). `404` — unknown `modelId` + `provider` (+ `subprovider`).
+
+If calculate fails for a multi-host model, use **`GET /v1/price/search?q=…`** or **`GET /v1/find/cheapest/{model_id}`** to confirm `provider_id`, then retry with matching `provider` and `subprovider` when required.
+
+---
 
 ## When to use this skill
 
-- "What does `gpt-4o` cost on OpenAI right now?"
-- "Calculate how much this prompt cost me."
-- "How much do cached input tokens cost on Anthropic for `claude-sonnet-4`?"
-- "List the providers that serve `llama-3.1-70b` and their rates."
-- Any flow that needs token-to-dollar conversion against a current catalog.
+- Provider/model discovery, live token rates, cheapest host, or one-call USD.
+- HTTP params, response fields, pagination, and calculate errors.
 
-If the user wants to **automate** fetching the catalog and **commit** mapped prices (offline or deterministic billing), switch to `update-llm-pricing` — it builds on the `GET` behavior this page defines. If they want prices to resolve at runtime inside their app via the SDK, point them at `add-usage-based-billing`.
+**Snapshots in-repo** → `update-llm-pricing`. **Runtime billing in app** → SDK / Next.js skills.
 
-## Inputs you need
+## Constraints
 
-The pricing endpoints are public. No API key, bearer token, or authentication header is required — call them directly.
-
-- For listing: optional `model_id`, `search`, `provider`, `subprovider`, `sort_by` (`model_id` | `provider` | `subprovider`), `order` (`asc` | `desc`), `page`, `limit` (max `1000`, default `100`).
-- For calculation: `modelId`, `provider`, and `usage` with `promptTokens`, `completionTokens`, `cacheReadTokens`, `cacheWriteTokens`, `reasoningTokens` (all required integers — pass `0` if unused). `subprovider` is required when one model is served by multiple providers (`bedrock`, `openrouter`, `together`, etc.). `webSearchCount` and `isByok` are optional.
-
-## Workflow: list pricing
-
-1. Confirm the model and (if needed) the provider. For "OpenAI's GPT-4o", filter by `model_id=gpt-4o` and `provider=openai`.
-
-2. Call the listing endpoint:
-
-   ```bash
-   curl -G 'https://api.narev.ai/models/pricing' \
-     --data-urlencode 'model_id=gpt-4o' \
-     --data-urlencode 'provider=openai'
-   ```
-
-3. The response is `{ data: ModelPricingEntry[], meta: { page, limit, total, total_pages } }`. Each entry has `model_id`, `provider`, `subprovider`, and a `pricing` object. The fields you most likely care about:
-   - `price_prompt` — USD per input token.
-   - `price_completion` — USD per output token.
-   - `price_input_cache_read`, `price_input_cache_write` — USD per cached input token.
-   - `price_internal_reasoning` — USD per reasoning output token.
-   - `pricing_request` — flat USD per request.
-   - `price_web_search` — USD per web-search invocation.
-   - `pricing_discount` — fractional discount (`0`–`1`) applied across all rates.
-   - `price_image`, `price_image_output`, `price_audio`, `price_audio_output`, `price_input_audio_cache` — USD per unit, when applicable.
-
-4. Surface the requested fields. Multiply by `1_000_000` if the user expects "USD per million tokens".
-
-5. If `meta.total_pages > 1`, page through with `page=2`, `page=3`, …. Filter rather than paginating the whole catalog whenever possible.
-
-## Workflow: calculate the cost of a call
-
-1. Collect token usage. Required integers: `promptTokens`, `completionTokens`, `cacheReadTokens`, `cacheWriteTokens`, `reasoningTokens`. If a category does not apply, pass `0`.
-
-2. POST the request:
-
-   ```bash
-   curl -X POST 'https://api.narev.ai/models/pricing/calculate' \
-     -H 'Content-Type: application/json' \
-     -d '{
-       "modelId": "gpt-4o",
-       "provider": "openai",
-       "subprovider": "OpenAI",
-       "usage": {
-         "promptTokens": 1000,
-         "completionTokens": 500,
-         "cacheReadTokens": 0,
-         "cacheWriteTokens": 0,
-         "reasoningTokens": 0
-       }
-     }'
-   ```
-
-3. The 200 response contains:
-   - `pricing` — the rates Narev applied (`input`, `output`, `request`, `inputCacheRead`, `inputCacheWrite`, `internalReasoning`, `webSearch`).
-   - `costBreakdown.total` — the final USD total.
-   - `usage` — echoed back so the caller can verify what was billed.
-
-4. Report `costBreakdown.total` to the user. If they ask "where does that number come from?", show `pricing` and explain that each token category was multiplied by its rate and summed.
-
-## Constraints and edge cases
-
-- **402 Payment Required** — model is enterprise-only. The error response has `error` set and `pricing: null`. Tell the user the model is not in the public catalog and point them at Narev for enterprise access.
-- **404 Not Found** — no public pricing for that `modelId` + `provider` (+ `subprovider`). Re-check IDs against the listing endpoint or drop `subprovider`.
-- **400 Bad Request** — `usage` failed validation. Most common cause: a missing required integer field. Pass `0`, not `null` or absent.
-- **Rates are USD per token.** Do not divide or multiply on the way in. Convert only when displaying.
-- **`subprovider` matters.** Models like `llama-3.1-70b` are hosted by Bedrock, OpenRouter, Together, etc. at different prices. If the user does not know the subprovider, list first to see options, then calculate.
-- **Do not hardcode rates.** Prices change. If the user wants stable values they can commit and review, switch to `update-llm-pricing`.
-
-## Reference
-
-- API base: `https://api.narev.ai`
-- List catalog (public): `GET https://api.narev.ai/models/pricing`
-- Calculate cost (public): `POST https://api.narev.ai/models/pricing/calculate`
-- Authenticated list (same query params, requires `Authorization: Bearer` + `NAREV_API_KEY`): `GET https://api.narev.ai/v1/models/pricing`
-- Docs — API overview: https://www.narev.ai/docs/platform/api-reference/introduction
-- Docs — list endpoint: https://www.narev.ai/docs/platform/api-reference/endpoint/pricing/list-model-pricing
-- Docs — calculate endpoint: https://www.narev.ai/docs/platform/api-reference/endpoint/pricing/calculate-cost-for-a-model-call
+- **Only the seven endpoints above** — no legacy list or calculate paths (`/models/pricing/calculate`, `/v1/models/pricing/calculate`, etc.).
+- **Calculate** — `POST /v1/calculate` only.
+- **Do not hardcode rates**; snapshot when you need pinned values.

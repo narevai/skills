@@ -4,83 +4,34 @@
     {
       "id": 1,
       "prompt": "we need to regenerate our committed model pricing file from narev so billing runs offline. what's the right approach?",
-      "expected_output": "Use GET https://api.narev.ai/models/pricing; paginate; map rows to local schema; write the target file; optional provider filter; no API key",
+      "expected_output": "Paginate GET /v1/price/search or GET /v1/price per provider; map pricing.prompt/completion; no API key",
       "files": [],
       "expectations": [
-        "Uses GET https://api.narev.ai/models/pricing (or equivalent /models/pricing) as the catalog source, not POST calculate for bulk snapshots",
-        "Describes pagination with page and limit (mentions limit up to 1000 or paginate until done)",
-        "States that no API key or bearer token is required for the public listing endpoint",
-        "Mentions confirming target path, format, and provider scope before overwriting",
-        "References merge-or-replace behavior (for example merge: overwrite keys returned, keep other providers)"
+        "Uses GET https://api.narev.ai/v1/price/search or GET https://api.narev.ai/v1/price/{provider_id} as the catalog source",
+        "Does not use GET /v1/models/pricing or POST /v1/calculate for bulk snapshots",
+        "Describes pagination with page and page_size",
+        "States no API key required"
       ]
     },
     {
       "id": 2,
-      "prompt": "our registry stores inputPerMTok and outputPerMTok. narev's list response has price_prompt and price_completion. how do we map them in the update script?",
-      "expected_output": "API is USD per token; multiply by 1_000_000 only when writing per-million fields; do not double-scale",
+      "prompt": "our registry stores inputPerMTok from price_prompt but the api returns pricing.prompt. how do we map in the update script?",
+      "expected_output": "pricing.prompt is USD per token; multiply by 1_000_000 for per-million fields",
       "files": [],
       "expectations": [
-        "States that Narev list pricing returns USD per token (price_prompt, price_completion)",
-        "Says to multiply per-token rates by 1_000_000 when the destination uses per-million tokens",
-        "Warns against double-scaling or applying the million multiplier twice",
-        "Ties mapping to a script or generator step rather than hand-editing rates"
+        "Maps pricing.prompt and pricing.completion from price API rows",
+        "Multiplies by 1_000_000 when destination uses per-million tokens",
+        "Warns against double-scaling"
       ]
     },
     {
       "id": 3,
-      "prompt": "some rows in the pricing list have pricing: null. should we write zeros for those models in our json snapshot?",
-      "expected_output": "Skip rows with null pricing; enterprise-only or unavailable",
+      "prompt": "i only need the exact json body rules for POST /v1/calculate. which skill?",
+      "expected_output": "lookup-llm-pricing for calculate; update for snapshots only",
       "files": [],
       "expectations": [
-        "Says to skip or omit rows where pricing is null",
-        "Associates null pricing with enterprise-only or unavailable catalog entries",
-        "Does not invent public per-token rates for skipped models"
-      ]
-    },
-    {
-      "id": 4,
-      "prompt": "openai and anthropic both expose a model with the same model_id string. our app needs different rates per vendor. how should we key the snapshot?",
-      "expected_output": "Use provider/model_id (or equivalent) so per-provider rates do not overwrite each other",
-      "files": [],
-      "expectations": [
-        "Explains that multi-provider models can share the same model_id",
-        "Recommends keying with provider/model_id (or provider plus model_id) when per-provider rates matter",
-        "Notes that bare model_id can mean last write wins if not namespaced"
-      ]
-    },
-    {
-      "id": 5,
-      "prompt": "we already use @ai-billing/core. after we fetch the list json, what shape does createObjectPriceResolver need and how does pricing_discount map?",
-      "expected_output": "ModelPricing in USD per token; map snake_case API fields to SDK keys; discount is fraction 0-1",
-      "files": [],
-      "expectations": [
-        "Says createObjectPriceResolver expects ModelPricing in USD per token (do not convert the map to per-million for the SDK)",
-        "Maps price_prompt to promptTokens and price_completion to completionTokens (or equivalent SDK field names)",
-        "States that pricing_discount from the API is a fraction between 0 and 1, not a percent",
-        "Mentions wiring createObjectPriceResolver with the generated Record after the snapshot step"
-      ]
-    },
-    {
-      "id": 6,
-      "prompt": "i only need the exact json body rules and http codes for POST /models/pricing/calculate. which skill should i follow?",
-      "expected_output": "Defer calculate contract, 402, and 404 details to lookup-llm-pricing; update skill covers listing and committed snapshots",
-      "files": [],
-      "expectations": [
-        "Points to lookup-llm-pricing (or narev-lookup-llm-pricing) for POST calculate, usage validation, and error semantics",
-        "Clarifies that update-llm-pricing focuses on GET list workflows and pinning rates to the repo",
-        "Does not duplicate full calculate request schema as the primary answer"
-      ]
-    },
-    {
-      "id": 7,
-      "prompt": "we added scripts/fetch-narev-pricing.mjs. ci should fail if the api is down. anything else from the skill checklist before we merge?",
-      "expected_output": "Non-zero exit on HTTP errors; document run command; optional generated-file banner; inspect diff",
-      "files": [],
-      "expectations": [
-        "Says the script should exit non-zero on HTTP errors so CI fails visibly",
-        "Mentions documenting the run command from package.json or project conventions (for example pnpm, uv, go run)",
-        "Optionally references a generated-file banner or formatter ignore for stable reviews",
-        "References inspecting the diff before commit or merge"
+        "Points to lookup-llm-pricing for POST /v1/calculate",
+        "Clarifies update-llm-pricing uses price search or price by provider for snapshots"
       ]
     }
   ]

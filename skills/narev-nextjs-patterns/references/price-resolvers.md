@@ -13,8 +13,8 @@ const priceResolver = createNarevPriceResolver({
 ## Runtime Pricing vs Pricing API
 
 - Runtime app billing: use `createNarevPriceResolver()` inside the `@ai-billing/*` middleware (uses your `NAREV_API_KEY` against `https://api.narev.ai`).
-- One-off lookup or cost calculation: use `narev-lookup-llm-pricing` (`GET` / `POST` on `https://api.narev.ai/models/pricing` — public, no key).
-- Committed offline rates: use `narev-update-llm-pricing` (paginate `GET https://api.narev.ai/models/pricing`).
+- One-off lookup or cost calculation: use `narev-lookup-llm-pricing` (`GET /v1/price/...`, `POST https://api.narev.ai/v1/calculate` — public, no key).
+- Committed offline rates: use `narev-update-llm-pricing` (paginate `GET https://api.narev.ai/v1/price/search` or per-provider price).
 
 ## Environment Variables
 
