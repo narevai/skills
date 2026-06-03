@@ -50,6 +50,8 @@ export function getBillingDestinations() {
 
 ## 4. Billed Model Helper — `lib/billing.ts`
 
+Pick a `model_id` that appears in `GET https://api.narev.ai/v1/reference/models` for your provider — billing with `createNarevPriceResolver` only works when Narev has pricing for that model. If unsure, default to DeepSeek (`@ai-sdk/deepseek` + `@ai-billing/deepseek`) and a catalog-listed DeepSeek `model_id`.
+
 Use `import 'server-only'` when this file lives outside route handlers.
 
 ```typescript

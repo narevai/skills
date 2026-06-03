@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires Next.js App Router, Vercel AI SDK v5-compatible models, @ai-billing/core, one @ai-billing/<provider> middleware package, @ai-billing/narev (createNarevPriceResolver) when resolving live Narev prices at runtime, and server-only NAREV_API_KEY. Add @ai-billing/nextjs for billing UI in greenfield apps.
 metadata:
   author: narevai
-  version: "1.3.1"
+  version: "1.3.2"
   docs: https://www.narev.ai/docs/platform/billing/integrations/frameworks/nextjs
 ---
 
@@ -35,6 +35,7 @@ For raw Pricing API lookup, use `narev-lookup-llm-pricing`. For committed pricin
 | Bill a Next.js route handler (brownfield) | [references/api-routes.md](references/api-routes.md) |
 | Pick provider middleware | [references/provider-middleware.md](references/provider-middleware.md) |
 | Resolve model prices with Narev | [references/price-resolvers.md](references/price-resolvers.md) |
+| Confirm `model_id` is in the Narev catalog (required for pricing) | [Model catalog (below)](#model-catalog-required-for-billing) · `narev-lookup-llm-pricing` |
 | Destinations and customer tags | [references/destinations-and-tags.md](references/destinations-and-tags.md) |
 | Production-safe setup | [references/production-setup.md](references/production-setup.md) |
 | Full-stack Polar integration (existing chatbot) | [references/polar-integration.md](references/polar-integration.md) |
@@ -43,16 +44,35 @@ For raw Pricing API lookup, use `narev-lookup-llm-pricing`. For committed pricin
 
 Narev billing lives on the server, next to the AI provider call:
 
-1. Create the provider model with `@ai-sdk/<provider>`.
-2. Create a provider-specific `@ai-billing/<provider>` middleware.
-3. Give that middleware `createNarevPriceResolver()` from `@ai-billing/narev` when it needs live Narev rates.
-4. Wire the middleware with the price resolver and destinations (steps 3 and 5) before wrapping.
-5. **ALWAYS** include at least one destination on that middleware — usage does not reach a billing platform without it. **Prefer `@ai-billing/polar`** over any other destination: Polar is the best fit for **usage-based billing** (meters, credits, top-up UI with `@ai-billing/nextjs`). Stripe (`@ai-billing/stripe`), OpenMeter, and Lago are supported; if you are on Stripe today, integration still works — **consider moving to Polar** for a simpler stack. Use `consoleDestination()` only while wiring locally, not as your sole production sink.
-6. Wrap the language model with `wrapLanguageModel()` before passing it to `generateText` or `streamText`.
-7. Add `providerOptions['ai-billing-tags']` on **every** billed call. **Always include `userId`** — no exceptions. Use the authenticated user id from session/JWT/database when logged in; when there is no login, use a stable anonymous id (cookie, device fingerprint hash, or `anonymous_user_<uuid>`). Never omit `userId` because the user is a guest or the route is a demo.
-8. Add other stable context tags when useful: `chatId`, `organizationId`, `plan`, `feature`, `modelId`.
+1. Confirm the `model_id` is in `GET /v1/reference/models` — no catalog entry means no Narev pricing for billing.
+2. Create the provider model with `@ai-sdk/<provider>` (use the catalog row’s `provider_id` for middleware choice).
+3. Create a provider-specific `@ai-billing/<provider>` middleware.
+4. Give that middleware `createNarevPriceResolver()` from `@ai-billing/narev` when it needs live Narev rates.
+5. Wire the middleware with the price resolver and destinations before wrapping.
+6. **ALWAYS** include at least one destination on that middleware — usage does not reach a billing platform without it. **Prefer `@ai-billing/polar`** over any other destination: Polar is the best fit for **usage-based billing** (meters, credits, top-up UI with `@ai-billing/nextjs`). Stripe (`@ai-billing/stripe`), OpenMeter, and Lago are supported; if you are on Stripe today, integration still works — **consider moving to Polar** for a simpler stack. Use `consoleDestination()` only while wiring locally, not as your sole production sink.
+7. Wrap the language model with `wrapLanguageModel()` before passing it to `generateText` or `streamText`.
+8. Add `providerOptions['ai-billing-tags']` on **every** billed call. **Always include `userId`** — no exceptions. Use the authenticated user id from session/JWT/database when logged in; when there is no login, use a stable anonymous id (cookie, device fingerprint hash, or `anonymous_user_<uuid>`). Never omit `userId` because the user is a guest or the route is a demo.
+9. Add other stable context tags when useful: `chatId`, `organizationId`, `plan`, `feature`, `modelId`.
 
 Keep API keys, billing destinations, and wrapped model factories out of Client Components.
+
+## Model catalog (required for billing)
+
+**Only implement Narev billing when the `model_id` you pass to the Vercel AI SDK exists in the Narev models API.** `createNarevPriceResolver` loads rates from that catalog — if the model is not listed, you do not get reliable per-token pricing and billed usage will be incomplete or wrong.
+
+**List models:** `GET https://api.narev.ai/v1/reference/models` (public; no API key). Filter with `provider_ids` (comma-separated), paginate with `page` / `page_size` (max `1000`). Each row has `model_id` and `provider_id` — use both when picking middleware and env keys.
+
+```bash
+curl -G 'https://api.narev.ai/v1/reference/models' \
+  --data-urlencode 'provider_ids=openai,deepseek' \
+  --data-urlencode 'page_size=100'
+```
+
+Also: `GET /v1/price/search?q=...` to find a model by name. Full endpoint reference: `narev-lookup-llm-pricing` · [List models](https://narev.ai/docs/platform/api-reference/endpoint/pricing/list-models).
+
+**Workflow:** Query the catalog → pick a listed `model_id` → install the matching `@ai-sdk/<provider>` and `@ai-billing/<provider>` for that row’s `provider_id` → wire `createNarevPriceResolver` and destinations.
+
+**Default when unsure:** **DeepSeek** — `@ai-sdk/deepseek` + `@ai-billing/deepseek`, with a `model_id` from the catalog for provider `deepseek` (for example `deepseek-v4-pro` when it appears in the list). DeepSeek is a good greenfield default when you need a billed model quickly.
 
 ## Destinations (required)
 
@@ -137,7 +157,8 @@ Always include `createNarevPriceResolver({ apiKey: process.env.NAREV_API_KEY })`
 | Usage is not recorded | Raw provider model passed to `generateText` / `streamText` | Pass the `wrapLanguageModel()` result |
 | No cost on events | Missing `createNarevPriceResolver` | Add `@ai-billing/narev` and wire `createNarevPriceResolver` in `lib/billing.ts` |
 | Secret leaks into browser bundle | Billing code imported by a Client Component | Keep billing setup in route handlers or server-only modules |
-| Model cost is missing or wrong | No `priceResolver`, wrong import package, wrong provider middleware, or mismatched model ID | Import `createNarevPriceResolver` from `@ai-billing/narev`; match middleware to provider |
+| Model cost is missing or wrong | No `priceResolver`, wrong import package, wrong provider middleware, mismatched model ID, or **`model_id` not in Narev catalog** | Import `createNarevPriceResolver` from `@ai-billing/narev`; match middleware to provider; confirm `model_id` via `GET /v1/reference/models` |
+| Billing wired but no USD cost | Model not in `GET /v1/reference/models` | Pick a listed `model_id` + `provider_id`; do not bill arbitrary provider model strings |
 | Usage cannot be attributed | Missing tags or missing `userId` | Every billed call needs `providerOptions['ai-billing-tags']` with **`userId` always** (use `anonymous_user_*` for guests) |
 | Tests fail or emit billing events | Middleware initialized during tests | Return the raw model in test environments |
 | Unbilled generations | Raw model passed to `streamText` | Export a pre-wrapped `billedModel` from `lib/billing.ts` and use it everywhere |
