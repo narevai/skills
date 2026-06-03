@@ -23,7 +23,8 @@ Factory names may differ by SDK version — confirm exports in the installed pac
 ```typescript
 import { createOpenAI } from '@ai-sdk/openai';
 import { createOpenAIMiddleware } from '@ai-billing/openai';
-import { consoleDestination, createNarevPriceResolver } from '@ai-billing/core';
+import { consoleDestination } from '@ai-billing/core';
+import { createNarevPriceResolver } from '@ai-billing/narev';
 import { wrapLanguageModel } from 'ai';
 
 const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -73,7 +74,8 @@ export function getModel(modelId: string) {
 ```typescript
 import { createGroq } from '@ai-sdk/groq';
 import { createGroqMiddleware } from '@ai-billing/groq';
-import { consoleDestination, createNarevPriceResolver } from '@ai-billing/core';
+import { consoleDestination } from '@ai-billing/core';
+import { createNarevPriceResolver } from '@ai-billing/narev';
 import { wrapLanguageModel } from 'ai';
 
 const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
@@ -93,9 +95,16 @@ export function getModel(modelId: string) {
 }
 ```
 
+## Unsupported provider
+
+When the app's AI SDK provider has **no** `@ai-billing/<provider>` package (see [packages.md](packages.md#unsupported-provider)), **change to a supported provider** that serves the same model. Do not skip billing or attach the wrong middleware.
+
+A supported host enables provider-matched middleware, Narev pricing, and destination events for usage-based billing. Use `narev-lookup-llm-pricing` to find which supported providers list the model, then swap the `@ai-sdk/*` (or Gateway) integration and matching billing package.
+
 ## Rules
 
 - Match middleware to provider. Do not use OpenAI billing middleware for a Groq, Anthropic, Gateway, or OpenRouter model.
+- No billing package for the current provider → switch provider (same model ID on a supported host), not a workaround middleware.
 - Wrap at the language-model boundary, then pass the wrapped model to `generateText`, `streamText`, `embed`, or other provider-calling AI SDK methods.
 - For multi-provider apps, centralize model factories so each provider path wraps with its own middleware.
 - For AI Gateway middleware, prices come from Gateway usage metadata — no `createNarevPriceResolver` when using `gateway.languageModel()`.

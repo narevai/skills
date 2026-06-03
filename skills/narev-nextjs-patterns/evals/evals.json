@@ -8,7 +8,7 @@
       "scaffold": null,
       "files": [],
       "expectations": [
-        "Installs or references @ai-billing/core, @ai-billing/openai, @ai-billing/polar, and @ai-billing/nextjs",
+        "Installs or references @ai-billing/core, @ai-billing/narev, @ai-billing/openai, @ai-billing/polar, and @ai-billing/nextjs",
         "Creates lib/destinations.ts with createPolarDestination and externalCustomerIdKey userId",
         "Creates lib/billing.ts with createOpenAIMiddleware and createNarevPriceResolver",
         "Exports a wrapped billedModel using wrapLanguageModel",
@@ -39,7 +39,9 @@
         "Imports CreditUsagePolar and CreditTopUpPolar from @ai-billing/nextjs",
         "Passes userId prop to both components",
         "Does not import lib/billing.ts or billing middleware in the client component",
-        "Derives userId from auth session or server component props rather than hardcoded demo values in production code"
+        "Derives userId from auth session or server component props rather than hardcoded demo values in production code",
+        "Ensures app/globals.css defines shadcn-like CSS variables (--card, --border, --foreground, --primary, etc.) or references globals.css.example",
+        "Imports globals.css from app/layout.tsx when adding or fixing billing UI styling"
       ]
     },
     {
@@ -51,9 +53,10 @@
       "expectations": [
         "Imports wrapLanguageModel from ai or uses a helper that calls wrapLanguageModel",
         "Imports createOpenAIMiddleware from @ai-billing/openai",
-        "Imports createNarevPriceResolver and consoleDestination from @ai-billing/core",
+        "Imports createNarevPriceResolver from @ai-billing/narev and consoleDestination from @ai-billing/core",
         "Reads NAREV_API_KEY only from server-side code",
-        "Passes the wrapped model, not the raw OpenAI model, to streamText"
+        "Passes the wrapped model, not the raw OpenAI model, to streamText",
+        "Includes userId in ai-billing-tags on the streamText or generateText call"
       ]
     },
     {
@@ -121,9 +124,23 @@
       "expectations": [
         "Imports createGroq from @ai-sdk/groq",
         "Imports createGroqMiddleware from @ai-billing/groq",
-        "Uses createNarevPriceResolver with NAREV_API_KEY",
+        "Imports createNarevPriceResolver from @ai-billing/narev and uses NAREV_API_KEY",
         "Wraps groq('llama-3.3-70b-versatile') with Groq billing middleware",
         "Does not reuse OpenAI billing middleware for the Groq model"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "my Next.js app bills through the Mistral AI SDK directly but there is no @ai-billing/mistral package. keep model mistral-large-latest and add Narev usage-based billing.",
+      "expected_output": "Switches to a supported provider that offers mistral-large-latest (e.g. OpenRouter) with matching @ai-billing middleware instead of forcing billing on the unsupported SDK",
+      "scaffold": null,
+      "files": [],
+      "expectations": [
+        "Does not claim billing works without a matching @ai-billing provider package",
+        "Switches to a supported provider listed in packages.md (e.g. OpenRouter, OpenAI, or Gateway)",
+        "Installs or references the matching @ai-billing/<provider> middleware for the new host",
+        "Keeps or references mistral-large-latest as the model ID on the new provider",
+        "Mentions narev-lookup-llm-pricing or Pricing API to find which supported providers carry the model"
       ]
     }
   ]

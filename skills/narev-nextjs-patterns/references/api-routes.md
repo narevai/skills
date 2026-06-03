@@ -2,12 +2,15 @@
 
 Billing middleware belongs in App Router route handlers or server-only helpers used by those handlers. Wrap the model before any Vercel AI SDK call that reaches a provider API.
 
+**Always** include at least one entry in `destinations` on `create*Middleware`. **Prefer `createPolarDestination`** from `@ai-billing/polar` for usage-based billing. Stripe and other destinations are supported; if you bill through Stripe today, consider migrating to Polar. Use `consoleDestination()` only for local wiring — see [destinations-and-tags.md](destinations-and-tags.md).
+
 ## Non-Streaming `generateText`
 
 ```typescript
 import { createOpenAI } from '@ai-sdk/openai';
 import { createOpenAIMiddleware } from '@ai-billing/openai';
-import { consoleDestination, createNarevPriceResolver } from '@ai-billing/core';
+import { consoleDestination } from '@ai-billing/core';
+import { createNarevPriceResolver } from '@ai-billing/narev';
 import { convertToModelMessages, generateText, wrapLanguageModel } from 'ai';
 
 const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -51,7 +54,7 @@ export async function POST(request: Request) {
 ```typescript
 import { createOpenAI } from '@ai-sdk/openai';
 import { createOpenAIMiddleware } from '@ai-billing/openai';
-import { createNarevPriceResolver } from '@ai-billing/core';
+import { createNarevPriceResolver } from '@ai-billing/narev';
 import { streamText, wrapLanguageModel } from 'ai';
 
 const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -93,6 +96,7 @@ export async function POST(request: Request) {
 
 ## Route Handler Checklist
 
+- **`userId` is required** on every billed call in `providerOptions['ai-billing-tags']` — use session id or a stable `anonymous_user_*` / guest id; never omit.
 - Keep `NAREV_API_KEY`, provider keys, and destination credentials server-only.
 - Validate request bodies before calling the model; billing tags should come from trusted session or database values when possible.
 - Use the same `modelId` string for the provider model and billing tags.

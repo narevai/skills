@@ -163,7 +163,7 @@ if (messageCount > entitlementsByUserType[userType].maxMessagesPerHour) {
 
 ## 5. Billing Tags on the AI SDK Call
 
-Pass customer context as `ai-billing-tags` in `providerOptions`. The `userId` key must match the `externalCustomerIdKey` configured in `createPolarDestination`.
+Pass customer context as `ai-billing-tags` in `providerOptions`. **`userId` is required on every billed call** — always set it (authenticated id or stable `anonymous_user_*` for guests). The `userId` key must match the `externalCustomerIdKey` configured in `createPolarDestination`.
 
 ```typescript
 const result = streamText({

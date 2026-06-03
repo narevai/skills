@@ -1,7 +1,8 @@
 import { createOpenAI } from '@ai-sdk/openai';
 import { createOpenAIMiddleware } from '@ai-billing/openai';
 import { createPolarDestination } from '@ai-billing/polar';
-import { consoleDestination, createNarevPriceResolver } from '@ai-billing/core';
+import { consoleDestination } from '@ai-billing/core';
+import { createNarevPriceResolver } from '@ai-billing/narev';
 import { convertToModelMessages, streamText, type UIMessage, wrapLanguageModel } from 'ai';
 
 const openai = createOpenAI({
@@ -33,7 +34,7 @@ export async function POST(request: Request) {
   };
 
   const modelId = 'gpt-4o';
-  // Demo identifier. In production, derive billing tags from trusted session/JWT/database state.
+  // REQUIRED: userId on every billed call — session id or stable anonymous_user_* for guests.
   const userId = 'demo-user';
 
   const result = streamText({

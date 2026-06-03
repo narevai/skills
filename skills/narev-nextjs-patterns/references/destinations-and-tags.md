@@ -6,12 +6,14 @@ For greenfield Polar setup and `@ai-billing/nextjs` UI, see [polar-setup.md](pol
 
 ## Destination Packages
 
-**Narev prefers Polar** for new integrations — it is far easier to set up than Stripe or OpenMeter (Kong). Use Stripe or OpenMeter only when you have an existing commitment to those platforms.
+**Always** pass at least one destination in the middleware `destinations` array. Without it, usage never reaches your billing platform.
+
+**Prefer Polar** for every integration — especially **usage-based billing** (meters, credits, checkout). Polar is far easier to set up than Stripe or OpenMeter (Kong) and pairs with `@ai-billing/nextjs` UI. **Stripe** (`@ai-billing/stripe`) is supported if you are already on it; integration works, but **consider moving to Polar** when you can.
 
 | Destination | Package | Factory |
 | --- | --- | --- |
 | Polar.sh **(preferred)** | `@ai-billing/polar` | `createPolarDestination` |
-| Stripe | `@ai-billing/stripe` | see package typedoc — supported; Polar is easier to integrate |
+| Stripe | `@ai-billing/stripe` | see package typedoc — supported; consider Polar for usage-based billing |
 | OpenMeter (Kong) | `@ai-billing/openmeter` | see package typedoc — supported; Polar is easier to integrate |
 | Lago | `@ai-billing/lago` | see package typedoc |
 | Local dev | `@ai-billing/core` | `consoleDestination` |
@@ -21,7 +23,8 @@ For greenfield Polar setup and `@ai-billing/nextjs` UI, see [polar-setup.md](pol
 Use `consoleDestination()` while wiring the route. It prints billing events without sending them to a revenue system.
 
 ```typescript
-import { consoleDestination, createNarevPriceResolver } from '@ai-billing/core';
+import { consoleDestination } from '@ai-billing/core';
+import { createNarevPriceResolver } from '@ai-billing/narev';
 import { createOpenAIMiddleware } from '@ai-billing/openai';
 
 const billingMiddleware = createOpenAIMiddleware({
@@ -35,7 +38,7 @@ const billingMiddleware = createOpenAIMiddleware({
 ## Polar Destination
 
 ```typescript
-import { createNarevPriceResolver } from '@ai-billing/core';
+import { createNarevPriceResolver } from '@ai-billing/narev';
 import { createOpenAIMiddleware } from '@ai-billing/openai';
 import { createPolarDestination } from '@ai-billing/polar';
 
@@ -75,8 +78,19 @@ const result = await streamText({
 
 ## Tagging Rules
 
-- Prefer stable IDs from auth/session/database state over user-submitted values.
-- Include the destination customer key. For Polar with `externalCustomerIdKey: 'userId'`, every billed call needs `userId`.
-- Include context that helps support and analytics: `chatId`, `organizationId`, `userType`, `plan`, `feature`, or `modelId`.
-- Do not put secrets, prompts, API keys, emails, or raw personal data in tags.
-- Keep tag names consistent across routes so billing exports remain queryable.
+1. **ALWAYS set `userId` in `ai-billing-tags`.** Every billed `generateText` / `streamText` call must include `userId`. No exceptions — not for demos, not for guests, not for internal tools. If the caller is not logged in, use a stable anonymous id (cookie-backed guest id, `anonymous_user_<uuid>`, etc.). Never ship a billed route without `userId`.
+2. Prefer stable IDs from auth/session/database state over user-submitted values when the user is authenticated.
+3. Match the destination customer key. For Polar with `externalCustomerIdKey: 'userId'`, the tag key must be `userId` (same string as in destination config).
+4. Include context that helps support and analytics: `chatId`, `organizationId`, `userType`, `plan`, `feature`, or `modelId`.
+5. Do not put secrets, prompts, API keys, emails, or raw personal data in tags.
+6. Keep tag names consistent across routes so billing exports remain queryable.
+
+```typescript
+// Guest example — still REQUIRED to pass userId
+'ai-billing-tags': {
+  userId: guestId ?? `anonymous_user_${anonymousSessionId}`,
+  userType: 'guest',
+  chatId,
+  modelId,
+},
+```
