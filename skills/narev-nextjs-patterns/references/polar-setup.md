@@ -24,18 +24,18 @@ createPolarDestination({
 
 ## Customer Tagging
 
-Every billed AI SDK call must include the customer key in tags:
+Every billed AI SDK call **must** include `userId` in `ai-billing-tags` — always, with no exceptions. Guests and demos still need a `userId` (use a stable `anonymous_user_*` or guest token id).
 
 ```typescript
 providerOptions: {
   'ai-billing-tags': {
-    userId: session.user.id,
+    userId: session?.user?.id ?? anonymousUserId, // REQUIRED — never omit
     feature: 'chat-interface',
   },
 },
 ```
 
-The `userId` value must correspond to an existing Polar customer (or your provisioning flow must create one before first usage).
+The `userId` value must correspond to an existing Polar customer for paid attribution (or your provisioning flow must create one before first usage). Anonymous ids can still emit meter events; provision Polar customers when those users convert.
 
 ## Sandbox Verification
 

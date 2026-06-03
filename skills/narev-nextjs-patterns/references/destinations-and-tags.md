@@ -76,8 +76,19 @@ const result = await streamText({
 
 ## Tagging Rules
 
-- Prefer stable IDs from auth/session/database state over user-submitted values.
-- Include the destination customer key. For Polar with `externalCustomerIdKey: 'userId'`, every billed call needs `userId`.
-- Include context that helps support and analytics: `chatId`, `organizationId`, `userType`, `plan`, `feature`, or `modelId`.
-- Do not put secrets, prompts, API keys, emails, or raw personal data in tags.
-- Keep tag names consistent across routes so billing exports remain queryable.
+1. **ALWAYS set `userId` in `ai-billing-tags`.** Every billed `generateText` / `streamText` call must include `userId`. No exceptions — not for demos, not for guests, not for internal tools. If the caller is not logged in, use a stable anonymous id (cookie-backed guest id, `anonymous_user_<uuid>`, etc.). Never ship a billed route without `userId`.
+2. Prefer stable IDs from auth/session/database state over user-submitted values when the user is authenticated.
+3. Match the destination customer key. For Polar with `externalCustomerIdKey: 'userId'`, the tag key must be `userId` (same string as in destination config).
+4. Include context that helps support and analytics: `chatId`, `organizationId`, `userType`, `plan`, `feature`, or `modelId`.
+5. Do not put secrets, prompts, API keys, emails, or raw personal data in tags.
+6. Keep tag names consistent across routes so billing exports remain queryable.
+
+```typescript
+// Guest example — still REQUIRED to pass userId
+'ai-billing-tags': {
+  userId: guestId ?? `anonymous_user_${anonymousSessionId}`,
+  userType: 'guest',
+  chatId,
+  modelId,
+},
+```

@@ -48,9 +48,22 @@ Narev billing lives on the server, next to the AI provider call:
 3. Give that middleware `createNarevPriceResolver()` from `@ai-billing/narev` when it needs live Narev rates.
 4. Add one or more destinations — **prefer `@ai-billing/polar`** (Narev's recommended choice; far easier than Stripe or OpenMeter/Kong) — or `consoleDestination()` while developing.
 5. Wrap the language model with `wrapLanguageModel()` before passing it to `generateText` or `streamText`.
-6. Add `providerOptions['ai-billing-tags']` with stable customer, user, organization, chat, or plan identifiers.
+6. Add `providerOptions['ai-billing-tags']` on **every** billed call. **Always include `userId`** — no exceptions. Use the authenticated user id from session/JWT/database when logged in; when there is no login, use a stable anonymous id (cookie, device fingerprint hash, or `anonymous_user_<uuid>`). Never omit `userId` because the user is a guest or the route is a demo.
+7. Add other stable context tags when useful: `chatId`, `organizationId`, `plan`, `feature`, `modelId`.
 
 Keep API keys, billing destinations, and wrapped model factories out of Client Components.
+
+## `userId` in billing tags (required)
+
+Every `streamText` / `generateText` call that uses a billed model **must** set `providerOptions['ai-billing-tags'].userId`. Destinations (especially Polar with `externalCustomerIdKey: 'userId'`) cannot attribute usage without it.
+
+| Situation | What to put in `userId` |
+| --- | --- |
+| Logged-in user | Stable id from auth (`session.user.id`, Clerk/Auth0 subject, etc.) |
+| Guest / anonymous | Stable anonymous id — e.g. `anonymous_user_<uuid>` from a cookie or server-issued guest token |
+| Local demo | A fixed demo id is fine; still **must** pass `userId` |
+
+Additional tags (`chatId`, `organizationId`, `feature`) are optional for attribution but recommended. **`userId` is not optional.**
 
 **AI Gateway variant:** When the app uses `gateway.languageModel()` from the Vercel AI Gateway, substitute `createGatewayV3Middleware` from `@ai-billing/gateway`. The Gateway already resolves per-token pricing, so no `priceResolver` is needed. See [references/polar-integration.md](references/polar-integration.md).
 
@@ -68,7 +81,7 @@ To pick a host: use `narev-lookup-llm-pricing` (`GET /v1/find/cheapest/{model_id
 2. Install `@ai-billing/core`, `@ai-billing/narev`, one `@ai-billing/<provider>` middleware package, one destination package (**prefer `@ai-billing/polar`**), `@ai-billing/nextjs`, `ai`, and the matching AI SDK provider — see [references/packages.md](references/packages.md).
 3. Configure a billing destination in `lib/destinations.ts`.
 4. Create a server-only billed model helper in `lib/billing.ts`.
-5. Call `streamText` (or `generateText`) with the wrapped model and `providerOptions['ai-billing-tags']`.
+5. Call `streamText` (or `generateText`) with the wrapped model and `providerOptions['ai-billing-tags']` including **`userId` on every call** (anonymous id when not logged in).
 6. Embed `@ai-billing/nextjs` components for usage display and self-serve top-up.
 
 Full step-by-step: [references/setup.md](references/setup.md).
@@ -81,7 +94,8 @@ import { billedModel } from '@/lib/billing';
 
 export async function POST(req: Request) {
   const { messages } = await req.json();
-  const userId = 'user_123'; // derive from auth session in production
+  // REQUIRED: userId on every billed call — session id or stable anonymous_user_* id
+  const userId = 'user_123';
 
   const result = streamText({
     model: billedModel,
@@ -109,7 +123,7 @@ Always include `createNarevPriceResolver({ apiKey: process.env.NAREV_API_KEY })`
 | No cost on events | Missing `createNarevPriceResolver` | Add `@ai-billing/narev` and wire `createNarevPriceResolver` in `lib/billing.ts` |
 | Secret leaks into browser bundle | Billing code imported by a Client Component | Keep billing setup in route handlers or server-only modules |
 | Model cost is missing or wrong | No `priceResolver`, wrong import package, wrong provider middleware, or mismatched model ID | Import `createNarevPriceResolver` from `@ai-billing/narev`; match middleware to provider |
-| Usage cannot be attributed | Missing tags | Set `providerOptions['ai-billing-tags']` with stable customer identifiers |
+| Usage cannot be attributed | Missing tags or missing `userId` | Every billed call needs `providerOptions['ai-billing-tags']` with **`userId` always** (use `anonymous_user_*` for guests) |
 | Tests fail or emit billing events | Middleware initialized during tests | Return the raw model in test environments |
 | Unbilled generations | Raw model passed to `streamText` | Export a pre-wrapped `billedModel` from `lib/billing.ts` and use it everywhere |
 | Cold starts do extra work | Middleware created inside every request | Cache middleware or wrapped-model helpers at module scope |

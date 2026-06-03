@@ -94,6 +94,7 @@ export async function POST(request: Request) {
 
 ## Route Handler Checklist
 
+- **`userId` is required** on every billed call in `providerOptions['ai-billing-tags']` — use session id or a stable `anonymous_user_*` / guest id; never omit.
 - Keep `NAREV_API_KEY`, provider keys, and destination credentials server-only.
 - Validate request bodies before calling the model; billing tags should come from trusted session or database values when possible.
 - Use the same `modelId` string for the provider model and billing tags.

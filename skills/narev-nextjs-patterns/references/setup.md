@@ -86,7 +86,8 @@ import { billedModel } from '@/lib/billing';
 
 export async function POST(req: Request) {
   const { messages } = await req.json();
-  const userId = 'user_123'; // from auth session in production
+  // REQUIRED: userId on every billed call — session id or stable anonymous_user_* for guests
+  const userId = 'user_123';
 
   const result = streamText({
     model: billedModel,
@@ -114,6 +115,7 @@ Add `@ai-billing/nextjs` components — see [ui-components.md](ui-components.md)
 - [ ] `NAREV_API_KEY` and provider keys are server-only (no `NEXT_PUBLIC_` prefix)
 - [ ] `@ai-billing/narev` installed; middleware includes destinations and `createNarevPriceResolver`
 - [ ] Every AI route uses `billedModel` (or a shared `getLanguageModel` helper)
+- [ ] Every billed call includes **`userId` in `ai-billing-tags`** (required; use anonymous id for guests)
 - [ ] Tags include the destination customer key (`userId` for Polar with default config)
 - [ ] Polar sandbox customer exists for the test `userId`
 - [ ] Usage dashboard receives the same `userId` as billing tags

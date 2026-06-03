@@ -34,7 +34,7 @@ export async function POST(request: Request) {
   };
 
   const modelId = 'gpt-4o';
-  // Demo identifier. In production, derive billing tags from trusted session/JWT/database state.
+  // REQUIRED: userId on every billed call — session id or stable anonymous_user_* for guests.
   const userId = 'demo-user';
 
   const result = streamText({

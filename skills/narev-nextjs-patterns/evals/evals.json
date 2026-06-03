@@ -53,7 +53,8 @@
         "Imports createOpenAIMiddleware from @ai-billing/openai",
         "Imports createNarevPriceResolver from @ai-billing/narev and consoleDestination from @ai-billing/core",
         "Reads NAREV_API_KEY only from server-side code",
-        "Passes the wrapped model, not the raw OpenAI model, to streamText"
+        "Passes the wrapped model, not the raw OpenAI model, to streamText",
+        "Includes userId in ai-billing-tags on the streamText or generateText call"
       ]
     },
     {

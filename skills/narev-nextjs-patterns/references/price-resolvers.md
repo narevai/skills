@@ -43,7 +43,7 @@ const result = await generateText({
   model: getBillingWrappedModel(openai(modelId)),
   messages,
   providerOptions: {
-    'ai-billing-tags': { modelId },
+    'ai-billing-tags': { userId, modelId }, // userId required on every billed call
   },
 });
 ```
