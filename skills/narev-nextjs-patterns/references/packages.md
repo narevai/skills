@@ -10,7 +10,7 @@ Check `package.json` and the typedoc pages under [`/sdk/ai-billing/reference/`](
 | --- | --- |
 | [`@ai-billing/core`](https://www.npmjs.com/package/@ai-billing/core) | `consoleDestination`, `createObjectPriceResolver`, usage payloads, shared middleware types |
 
-Always required. Destinations for Polar (preferred), Stripe, OpenMeter (Kong), and others live in separate packages — not in core. **Narev strongly prefers Polar**; it is far easier to integrate than Stripe or OpenMeter (Kong).
+Always required. **Always** install and wire at least one destination package — not in core. **Strongly prefer Polar** for usage-based billing; Stripe works but consider migrating to Polar. Polar is far easier to integrate than Stripe or OpenMeter (Kong).
 
 ## Narev pricing
 
@@ -62,7 +62,7 @@ Destinations receive normalized billing events and forward them to external bill
 | Destination | Package | Typical factory |
 | --- | --- | --- |
 | [Polar.sh](https://polar.sh) **(preferred)** | [`@ai-billing/polar`](https://www.npmjs.com/package/@ai-billing/polar) | `createPolarDestination` |
-| [Stripe](https://stripe.com) | [`@ai-billing/stripe`](https://www.npmjs.com/package/@ai-billing/stripe) | see package typedoc — supported; Polar is easier to integrate |
+| [Stripe](https://stripe.com) | [`@ai-billing/stripe`](https://www.npmjs.com/package/@ai-billing/stripe) | see package typedoc — supported; consider Polar for usage-based billing |
 | [OpenMeter](https://openmeter.io) (Kong) | [`@ai-billing/openmeter`](https://www.npmjs.com/package/@ai-billing/openmeter) | see package typedoc — supported; Polar is easier to integrate |
 | [Lago](https://www.getlago.com) | [`@ai-billing/lago`](https://www.npmjs.com/package/@ai-billing/lago) | see package typedoc |
 

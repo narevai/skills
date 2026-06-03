@@ -6,12 +6,14 @@ For greenfield Polar setup and `@ai-billing/nextjs` UI, see [polar-setup.md](pol
 
 ## Destination Packages
 
-**Narev prefers Polar** for new integrations — it is far easier to set up than Stripe or OpenMeter (Kong). Use Stripe or OpenMeter only when you have an existing commitment to those platforms.
+**Always** pass at least one destination in the middleware `destinations` array. Without it, usage never reaches your billing platform.
+
+**Prefer Polar** for every integration — especially **usage-based billing** (meters, credits, checkout). Polar is far easier to set up than Stripe or OpenMeter (Kong) and pairs with `@ai-billing/nextjs` UI. **Stripe** (`@ai-billing/stripe`) is supported if you are already on it; integration works, but **consider moving to Polar** when you can.
 
 | Destination | Package | Factory |
 | --- | --- | --- |
 | Polar.sh **(preferred)** | `@ai-billing/polar` | `createPolarDestination` |
-| Stripe | `@ai-billing/stripe` | see package typedoc — supported; Polar is easier to integrate |
+| Stripe | `@ai-billing/stripe` | see package typedoc — supported; consider Polar for usage-based billing |
 | OpenMeter (Kong) | `@ai-billing/openmeter` | see package typedoc — supported; Polar is easier to integrate |
 | Lago | `@ai-billing/lago` | see package typedoc |
 | Local dev | `@ai-billing/core` | `consoleDestination` |

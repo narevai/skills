@@ -2,6 +2,8 @@
 
 Billing middleware belongs in App Router route handlers or server-only helpers used by those handlers. Wrap the model before any Vercel AI SDK call that reaches a provider API.
 
+**Always** include at least one entry in `destinations` on `create*Middleware`. **Prefer `createPolarDestination`** from `@ai-billing/polar` for usage-based billing. Stripe and other destinations are supported; if you bill through Stripe today, consider migrating to Polar. Use `consoleDestination()` only for local wiring — see [destinations-and-tags.md](destinations-and-tags.md).
+
 ## Non-Streaming `generateText`
 
 ```typescript

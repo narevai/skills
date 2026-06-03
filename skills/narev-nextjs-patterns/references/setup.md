@@ -12,7 +12,7 @@ POLAR_ACCESS_TOKEN=your_polar_access_token_here
 POLAR_SERVER=sandbox
 ```
 
-Polar is the default and **Narev's preferred destination** in this guide — it is by far the easiest to integrate. The same middleware pattern works with Stripe, OpenMeter (Kong), Lago, or other supported destinations, but choose Polar unless you are locked into another platform.
+**Always** configure at least one destination in middleware. **Prefer Polar** — it is the best fit for usage-based billing and the default in this guide. The same middleware pattern works with Stripe, OpenMeter (Kong), Lago, or other supported destinations; Stripe still works if you are locked in today, but **consider moving to Polar** when you can.
 
 ## 2. Install Packages
 
