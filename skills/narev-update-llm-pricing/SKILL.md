@@ -1,91 +1,82 @@
 ---
 name: narev-update-llm-pricing
-description: 'Update LLM prices in the repo: Use this skill to snapshot live LLM pricing into a checked-in file so billing or cost math can run offline with deterministic rates. Use for any language or stack (TypeScript, Python, Go, JSON registries, etc.) — not only typescript. Use when the user wants pinned prices, wants to remove a runtime dependency on the Narev API, wants to refresh a committed pricing file, or mentions "snapshot pricing", "freeze prices", "pin model rates", "regenerate pricing file", "update pricing in the repo", or "sync token pricing from Narev".'
+description: 'Pin LLM pricing in the repo: fetch rows from narev-lookup-llm-pricing (price/search or price per provider), map pricing.prompt/completion into your schema, write a committed file. Use for snapshots — not for endpoint contracts (use lookup-llm-pricing).'
 license: MIT
 metadata:
   author: narevai
-  version: "1.1.0"
-  docs: https://www.narev.ai/docs/platform/api-reference/endpoint/pricing/list-model-pricing
+  version: "2.0.0"
+  docs: https://www.narev.ai/docs/platform/api-reference/introduction
 ---
 
 # Update LLM pricing in the local repo
 
-This skill is **not** a second API spec — it describes **what you can implement** using the **listing** API that `lookup-llm-pricing` documents (`GET https://www.narev.ai/api/models/pricing`): paginate, map each row to **your** schema, and write a committed file. For path/query/body contracts, `402`/`404`, and **`POST` calculate**, use `lookup-llm-pricing`. You do **not** need the Narev SDK or Vercel AI SDK — any HTTP client and file I/O in the repo's language is enough.
+Turn **live price API output** into a **checked-in** file for offline or deterministic billing.
+
+**HTTP contracts** → `narev-lookup-llm-pricing` (seven endpoints only). This skill covers **fetch + map + write**.
 
 ## When to use this skill
 
-- "Update LLM model price snapshot present in your project"
-- "Refresh committed pricing registry with the latest rates (find where the project stores rates, or add a file or script if nothing exists yet)."
+- Refresh a committed pricing registry from Narev.
+- Swap `createNarevPriceResolver` for `createObjectPriceResolver` over a local map.
+- Add a snapshot script or scheduled CI job.
 
-If the user only needs **how the API works** or **cost for one call** (`POST` calculate), point them at `lookup-llm-pricing`.
+Live lookup or **one-call USD** → `narev-lookup-llm-pricing` (`POST /v1/calculate`).
 
-## Inputs you need
+## What to fetch
 
-The Narev pricing API is public. No API key or bearer token is required.
+Use **only** lookup’s price endpoints (not calculate for bulk data):
 
-- **Target file path** and **format** (TypeScript object, JSON, YAML, Python module, etc.). Confirm before overwriting.
-- **Scope**: which `provider` values to refresh (API slugs), or the full catalog. Use the `provider` query parameter; omit it to fetch everything (paginate until `page > meta.total_pages`).
-- **Local units**: the API returns **USD per token**. Some codebases store **USD per million tokens** — multiply by `1_000_000` only when writing that shape, and document it in the script.
+**Option A — full catalog (simplest)**
 
-## API response shape (what you read)
+Paginate `GET https://api.narev.ai/v1/price/search` with `page` and `page_size` (max `1000`) until `page > meta.total_pages`. Optional `q` to narrow scope.
 
-Paginate with `page`, `limit` (max `1000`), and optional `provider`, `model_id`, `search`, `subprovider`. Response: `{ data: ModelPricingEntry[], meta: { total_pages, ... } }`.
+**Option B — per provider**
 
-Each row has `model_id`, `provider`, `subprovider`, and `pricing`. When `pricing` is `null`, skip the row (enterprise-only or unavailable).
+1. `GET https://api.narev.ai/v1/reference/providers` for `provider_id` values.
+2. For each provider (or a scoped subset), paginate `GET https://api.narev.ai/v1/price/{provider_id}`.
 
-Useful `pricing` fields (snake_case, USD per unit unless noted):
+Do **not** use `GET /v1/models/pricing`, `GET /models/pricing`, or bulk `POST /v1/calculate`.
 
-| Field                                                | Meaning                         |
-| ---------------------------------------------------- | ------------------------------- |
-| `price_prompt`                                       | Input token                     |
-| `price_completion`                                   | Output token                    |
-| `price_input_cache_read` / `price_input_cache_write` | Cached input tokens             |
-| `price_internal_reasoning`                           | Reasoning tokens                |
-| `pricing_request`                                    | Flat per request                |
-| `price_web_search`                                   | Per web-search invocation       |
-| `pricing_discount`                                   | Fraction `0`–`1`, not a percent |
+## What each row means
 
-`price_image`, `price_audio`, `price_input_audio_cache`, etc. may appear — carry them through only if your local registry supports them.
+From `{ data: PriceEntry[], meta }`:
 
-## Mapping to **your** registry (default path)
+| API field | Snapshot use |
+| --------- | ------------- |
+| `model_id`, `provider_id` | Keys — often `provider_id/model_id` when the same model exists on multiple vendors |
+| `pricing.prompt` | Input token rate (USD per token) |
+| `pricing.completion` | Output token rate |
+| `pricing.input_cache_read`, `pricing.input_cache_write` | Cache tiers |
+| `pricing.internal_reasoning` | Reasoning tokens |
+| `pricing.request`, `pricing.web_search` | Per-request / per-search |
+| `pricing.discount` | Fraction `0`–`1`, not a percent |
 
-1. Inspect the repo: find the existing pricing map or config and match **key style** (`model_id` only vs `provider/model_id`), **units** (per token vs per 1M tokens), and **which fields** the app reads.
-2. Implement a script in the project's language (`scripts/update-pricing.ts`, `scripts/update_pricing.py`, etc.) that:
-   - Loops pages until done.
-   - Optionally filters by one or more `provider` query values per run (or omit for full catalog).
-   - **Merges** or **replaces** according to product needs: common pattern is merge — keep unrelated providers in file, overwrite keys returned by this fetch.
-   - Writes a generated-file banner when the format allows.
-   - Exits non-zero on HTTP errors so CI can fail visibly.
+Skip rows with missing or null `pricing` if the API returns them.
 
-3. Document the run command in a comment or README snippet (`pnpm tsx scripts/...`, `uv run python scripts/...`, etc.).
+## Mapping to your registry
 
-### Reference pattern: merge into an existing TS registry (strip + regenerate block)
+1. **Inspect the repo** — key style, per-token vs per-million, which fields the app reads.
+2. **Transform** each row:
+   - Per-million: `inputPerMTok = pricing.prompt * 1_000_000` (same for completion). Do not double-scale.
+   - Per-token: copy `pricing.*` as-is (rename `prompt` → `price_prompt` if your schema uses that).
+   - Map `provider_id` → `provider` when aligning with `POST /v1/calculate` or SDK maps.
+3. **Merge or replace** — merge overwrites keys from this run; replace rewrites the whole file.
+4. **Script hygiene** — generated banner, non-zero exit on HTTP errors, document run command, inspect diff.
 
-Repos like Mission Control sometimes keep `MODEL_PRICING` in TypeScript with `inputPerMTok` / `outputPerMTok`. Adapt paths and regex to the real file:
+### `@ai-billing/core` (optional)
 
-- Fetch with `provider` repeated per catalog you care about, or no `provider` for full catalog.
-- Convert API per-token rates to per-million: `inputPerMTok = price_prompt * 1_000_000`, same for completion.
-- Key both `'model_id'` and `'provider/model_id'` if the app resolves either style.
-- Parse the existing block, merge new rows into the dict, sort keys if you want stable diffs, replace the block with `String.replace`, write the file.
+`createObjectPriceResolver` expects **`ModelPricing` in USD per token**:
 
-This is illustrative — match the project's exact types and formatting.
-
-### Reference pattern: `@ai-billing/core` offline resolver (optional)
-
-If the user **already** uses the Narev SDK, `createObjectPriceResolver` expects **`ModelPricing` in USD per token** (do not multiply to per-million for the SDK map). Map API → SDK like this:
-
-| Narev API (`PricingData`)  | SDK (`ModelPricing`)      |
-| -------------------------- | ------------------------- |
-| `price_prompt`             | `promptTokens`            |
-| `price_completion`         | `completionTokens`        |
-| `price_input_cache_read`   | `inputCacheReadTokens`    |
-| `price_input_cache_write`  | `inputCacheWriteTokens`   |
-| `price_internal_reasoning` | `internalReasoningTokens` |
-| `pricing_request`          | `request`                 |
-| `price_web_search`         | `webSearch`               |
-| `pricing_discount`         | `discount`                |
-
-Output `Record<string, ModelPricing>` keyed by how the app resolves models (see multi-provider note below). Then:
+| Price API (`pricing`) | SDK `ModelPricing` |
+| --------------------- | ------------------ |
+| `prompt` | `promptTokens` |
+| `completion` | `completionTokens` |
+| `input_cache_read` | `inputCacheReadTokens` |
+| `input_cache_write` | `inputCacheWriteTokens` |
+| `internal_reasoning` | `internalReasoningTokens` |
+| `request` | `request` |
+| `web_search` | `webSearch` |
+| `discount` | `discount` |
 
 ```ts
 import { createObjectPriceResolver } from "@ai-billing/core";
@@ -94,41 +85,22 @@ import { pricing } from "./pricing";
 export const priceResolver = createObjectPriceResolver(pricing);
 ```
 
-## Workflow (agent checklist)
+## Workflow
 
-### 1. Confirm scope and target file
+1. **Scope** — providers, target path, format, units.
+2. **Fetch** — paginate `GET /v1/price/search` or per-provider `GET /v1/price/{provider_id}` per lookup.
+3. **Map & write** — apply table above; merge/replace; banner if generated.
+4. **Run** — project package runner; verify diff.
+5. **Wire app** — import file or `createObjectPriceResolver`; optional CI schedule.
 
-Providers, model subset (if any), output path, and whether units are per token or per 1M in the file.
+## Constraints
 
-### 2. Add or update a snapshot script
-
-Use the repo's language and dependencies (`fetch` / `httpx` / `requests` / `urllib`). Paginate `GET https://www.narev.ai/api/models/pricing`. Transform into the local schema. Prefer idempotent writes and small, reviewable diffs.
-
-### 3. Run it
-
-Use the project's package runner. Do not assume `pnpm` or `tsx` — check `package.json`, `pyproject.toml`, etc. Inspect the diff before committing.
-
-### 4. Wire into the app (only if applicable)
-
-For custom registries, point the app at the updated file or import. For `@ai-billing/core`, swap `createNarevPriceResolver` for `createObjectPriceResolver` as above.
-
-### 5. Schedule refreshes (optional)
-
-CI on a schedule that runs the script and opens a PR keeps rates fresh with human review.
-
-## Constraints and edge cases
-
-- **Multi-provider models share a `model_id`.** If you need per-provider rates, key with `provider/model_id` (and align lookup). Otherwise last write wins for bare `model_id`.
-- **Skip `pricing: null`.**
-- **`pricing_discount` is a fraction** (`0.1` = 10% off). Pass through if your registry supports it; many simple token maps ignore it.
-- **API = USD per token.** Scale to per-1M (or per-1K) only in your script when the destination format requires it — do not double-scale.
-- **Snapshot drift.** Re-run before releases that depend on accurate math.
-- **Generated files.** Banner comment + formatter ignore if needed.
+- **Price endpoints only** for snapshots (`/v1/price/search` or `/v1/price/{provider_id}`).
+- **`pricing.discount`** is a fraction (`0.1` = 10% off).
+- Re-run before releases that depend on accurate math.
 
 ## Reference
 
-- List pricing API: `/platform/api-reference/endpoint/pricing/list-model-pricing`
-- SDK overview (optional): `/sdk/ai-billing/index`
-- `createObjectPriceResolver`: `/sdk/ai-billing/reference/core/typedoc/functions/createObjectPriceResolver`
-- `createNarevPriceResolver` (live): `/sdk/ai-billing/reference/core/typedoc/functions/createNarevPriceResolver`
-- `ModelPricing`: `/sdk/ai-billing/reference/core/typedoc/interfaces/ModelPricing`
+- Endpoints and row shape: `narev-lookup-llm-pricing`
+- Docs: https://www.narev.ai/docs/platform/api-reference/introduction
+- SDK — `createObjectPriceResolver`: https://narev.ai/docs/sdk/ai-billing/reference/core/typedoc/functions/createObjectPriceResolver
