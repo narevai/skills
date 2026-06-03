@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires Next.js App Router, Vercel AI SDK v5-compatible models, @ai-billing/core, one @ai-billing/<provider> middleware package, and server-only NAREV_API_KEY when resolving live Narev prices at runtime. Add @ai-billing/nextjs for billing UI in greenfield apps.
 metadata:
   author: narevai
-  version: "1.1.0"
+  version: "1.2.0"
   docs: https://www.narev.ai/docs/platform/billing/integrations/frameworks/nextjs
 ---
 
@@ -28,6 +28,7 @@ For raw Pricing API lookup, use `narev-lookup-llm-pricing`. For committed pricin
 | Task | Reference |
 |------|-----------|
 | All `@ai-billing/*` packages (providers, destinations, UI) | [references/packages.md](references/packages.md) |
+| Unsupported AI SDK provider (no `@ai-billing` package) | [references/packages.md](references/packages.md#unsupported-provider) → switch to a supported provider with the same model |
 | Greenfield: packages, env, destinations, billed model, chat route | [references/setup.md](references/setup.md) |
 | Polar destination and customer mapping (greenfield) | [references/polar-setup.md](references/polar-setup.md) |
 | Usage dashboard and credit top-up UI | [references/ui-components.md](references/ui-components.md) |
@@ -52,6 +53,14 @@ Narev billing lives on the server, next to the AI provider call:
 Keep API keys, billing destinations, and wrapped model factories out of Client Components.
 
 **AI Gateway variant:** When the app uses `gateway.languageModel()` from the Vercel AI Gateway, substitute `createGatewayV3Middleware` from `@ai-billing/gateway`. The Gateway already resolves per-token pricing, so no `priceResolver` is needed. See [references/polar-integration.md](references/polar-integration.md).
+
+## Unsupported provider → switch provider
+
+If the app calls a Vercel AI SDK provider that has **no** matching `@ai-billing/<provider>` package (check `package.json` against [references/packages.md](references/packages.md)), **do not** skip billing or reuse another provider's middleware. **Change the integration to a supported provider** that serves the same `modelId`.
+
+Popular models are available from multiple hosts (OpenRouter, OpenAI, Groq, Google, Anthropic, DeepSeek, Vercel AI Gateway, and others in the packages table). A supported provider gives you provider-matched middleware, `createNarevPriceResolver` for per-token cost, and destination events — the pieces you need for **usage-based billing**.
+
+To pick a host: use `narev-lookup-llm-pricing` (`GET /v1/find/cheapest/{model_id}` or price search) to see which supported providers carry the model, then install that provider's `@ai-sdk/*` (or Gateway) package plus the matching `@ai-billing/*` middleware. **OpenRouter** is a common single-provider fallback when the app needs many model IDs. For custom HTTP APIs, try an OpenAI-compatible AI SDK provider with `@ai-billing/openai-compatible` only when the API is truly compatible — otherwise switch to a listed provider.
 
 ## Greenfield Flow
 
@@ -104,6 +113,8 @@ Always include `createNarevPriceResolver({ apiKey: process.env.NAREV_API_KEY })`
 | Tests fail or emit billing events | Middleware initialized during tests | Return the raw model in test environments |
 | Unbilled generations | Raw model passed to `streamText` | Export a pre-wrapped `billedModel` from `lib/billing.ts` and use it everywhere |
 | Cold starts do extra work | Middleware created inside every request | Cache middleware or wrapped-model helpers at module scope |
+| No `@ai-billing/<provider>` for current SDK | Unsupported or niche provider (e.g. direct Mistral/Cohere SDK with no billing package) | Switch to a [supported provider](references/packages.md) that offers the same model; use `narev-lookup-llm-pricing` to find hosts |
+| Billing silently wrong | OpenAI middleware on a Groq/OpenRouter/other model | Match middleware to provider, or change provider so middleware exists |
 
 ## Packages
 

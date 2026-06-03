@@ -16,6 +16,21 @@ Always required. Destinations for Polar (preferred), Stripe, OpenMeter (Kong), a
 
 Match the billing package to the Vercel AI SDK provider your app calls. Do not reuse one provider's middleware for another provider's model.
 
+## Unsupported provider
+
+There is no generic `@ai-billing` middleware. Billing only works when a **provider-specific** package exists in the table below.
+
+If `package.json` uses an AI SDK provider with **no** row in this table (for example a direct Mistral, Cohere, or bespoke host SDK):
+
+1. **Do not** keep the unsupported provider and skip billing, or force another provider's middleware onto the wrong model.
+2. **Switch to a supported provider** that exposes the same model ID. Popular models are listed on multiple hosts; a supported route is required for usage-based billing (middleware + `createNarevPriceResolver` + destinations).
+3. Use **`narev-lookup-llm-pricing`** — `GET /v1/find/cheapest/{model_id}` or `GET /v1/price/search` — to see which supported providers carry the model.
+4. Install the matching `@ai-sdk/*` (or Gateway) package and `@ai-billing/<provider>`, update env vars, and point `lib/billing.ts` / provider factories at the new host.
+
+**OpenRouter** (`@openrouter/ai-sdk-provider` + `@ai-billing/openrouter`) is the usual fallback when you need one integration for many models. **Vercel AI Gateway** (`gateway.languageModel()` + `@ai-billing/gateway`) is another multi-model path.
+
+**OpenAI-compatible** custom bases may use `@ai-sdk/openai-compatible` + `@ai-billing/openai-compatible` only when the HTTP API is actually OpenAI-compatible; if not, switch to a listed provider instead.
+
 | Provider | Billing package | Typical AI SDK dependency |
 | --- | --- | --- |
 | [OpenRouter](https://ai-sdk.dev/providers/community-providers/openrouter) | [`@ai-billing/openrouter`](https://www.npmjs.com/package/@ai-billing/openrouter) | `@openrouter/ai-sdk-provider` |
