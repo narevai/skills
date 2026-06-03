@@ -125,7 +125,7 @@ When unsure: **existing AI SDK routes** → start at `references/api-routes.md`;
 
 If you know your task, you can directly access:
 
-- `/narev-lookup-llm-pricing` — Pricing API **reference** (list + calculate); skill `narev-lookup-llm-pricing`
+- `/narev-lookup-llm-pricing` — Pricing API **reference** (seven public endpoints); skill `narev-lookup-llm-pricing`
 - `/narev-update-llm-pricing` — **Applied** workflows using that API (snapshots, registries); skill `narev-update-llm-pricing`
 - `/narev-nextjs-patterns` — Next.js billing (greenfield + brownfield); skill `narev-nextjs-patterns`
 

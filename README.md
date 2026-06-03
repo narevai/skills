@@ -59,8 +59,8 @@ Install the **narev** plugin group to get all four skills.
 | Skill | Purpose | When to use |
 |-------|---------|-------------|
 | `narev-starter` | **Start here** — picks the right skill or documentation path | Any Narev Cloud, pricing, billing, or SDK question; use when unsure |
-| `narev-lookup-llm-pricing` | **Pricing API reference** — `GET` catalog, `POST` calculate, errors and contracts | Live rates, per-call cost math, endpoint behavior without committing a snapshot |
-| `narev-update-llm-pricing` | **Pin pricing in-repo** — patterns to snapshot the catalog into your codebase | Freeze rates, refresh a checked-in pricing file, offline or deterministic billing |
+| `narev-lookup-llm-pricing` | **Pricing API reference** — seven public pricing endpoints (reference, price, find/cheapest, calculate), errors and contracts | Live rates, per-call cost math, endpoint behavior without committing a snapshot |
+| `narev-update-llm-pricing` | **Pin pricing in-repo** — patterns to snapshot live price API rows into your codebase | Freeze rates, refresh a checked-in pricing file, offline or deterministic billing |
 | `narev-nextjs-patterns` | **Next.js billing** — greenfield setup (Polar, billed model, `@ai-billing/nextjs` UI) and brownfield retrofit (wrap existing Vercel AI SDK routes, multi-provider factories, test bypasses) | Any Next.js App Router app with Narev usage-based billing |
 
 ## Quick start

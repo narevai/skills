@@ -5,7 +5,7 @@ license: MIT
 metadata:
   author: narevai
   version: "2.0.0"
-  docs: https://www.narev.ai/docs/platform/api-reference/endpoint/pricing/list-model-pricing
+  docs: https://www.narev.ai/docs/platform/api-reference/introduction
 ---
 
 # Update LLM pricing in the local repo
