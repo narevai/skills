@@ -1,11 +1,11 @@
 ---
-name: narev
+name: narev-starter
 description:
-  Start Here. Use when the user asks about Narev Cloud, the Pricing API, model pricing
+  Start here. Use when the user asks about Narev Cloud, the Pricing API, model pricing
   (API reference skill vs applied workflows on top of that API), live LLM pricing, token costs,
   cost calculation, pinning or snapshotting model rates, Narev SDK,
   @ai-billing/core, provider middleware packages, Vercel AI SDK billing, Next.js App Router
-  route handlers, @ai-billing/nextjs billing UI, narev-nextjs (greenfield and brownfield),
+  route handlers, @ai-billing/nextjs billing UI, narev-nextjs-patterns (greenfield and brownfield),
   framework-specific billing patterns, usage-based billing,
   billing integrations (Polar preferred; Stripe, OpenMeter/Kong, Lago also supported), benchmarks, routers, routing API, FOCUS format,
   Narev Self-Hosted, deployment, COGS, customer tagging, FinOps for AI, or this documentation
@@ -13,11 +13,10 @@ description:
 license: MIT
 metadata:
   author: narevai
-  version: "1.2.0"
-  skill_group: core
+  version: "1.3.0"
 ---
 
-# Narev Skills Router
+# Narev starter
 
 Check `package.json` (and the lockfile if versions disagree) for `@ai-billing/core` and any `@ai-billing/*` packages. Use the typedoc pages under [`/sdk/ai-billing/reference/`](https://narev.ai/docs/sdk/ai-billing/index) that match the installed packages for code samples and option shapes. If there is no SDK in the project, treat the docs site as source of truth for the latest APIs.
 
@@ -86,7 +85,7 @@ Check `package.json` (and the lockfile if versions disagree) for `@ai-billing/co
 - Destinations, price resolvers, usage payloads, errors
 - Prefer this over raw Pricing HTTP when billing runs inside the app
 
-**Next.js (App Router + Vercel AI SDK)** → Use `narev-nextjs`
+**Next.js (App Router + Vercel AI SDK)** → Use `narev-nextjs-patterns`
 
 - **New app:** scaffold packages, env, Polar destination, billed model helper, chat route, and `@ai-billing/nextjs` usage dashboard — see `references/setup.md`.
 - **Existing app:** retrofit billing into route handlers that already call `generateText`, `streamText`, or other AI SDK methods — see `references/api-routes.md`.
@@ -128,6 +127,6 @@ If you know your task, you can directly access:
 
 - `/narev-lookup-llm-pricing` — Pricing API **reference** (list + calculate); skill `narev-lookup-llm-pricing`
 - `/narev-update-llm-pricing` — **Applied** workflows using that API (snapshots, registries); skill `narev-update-llm-pricing`
-- `/narev-nextjs` — Next.js billing (greenfield + brownfield); skill `narev-nextjs`
+- `/narev-nextjs-patterns` — Next.js billing (greenfield + brownfield); skill `narev-nextjs-patterns`
 
 Or describe what you need and I'll recommend the right one.
