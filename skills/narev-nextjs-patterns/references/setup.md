@@ -112,6 +112,8 @@ For UI-message chat clients, use `convertToModelMessages` and `toUIMessageStream
 
 Add `@ai-billing/nextjs` components — see [ui-components.md](ui-components.md).
 
+**Styling:** ensure `app/globals.css` includes shadcn-like design tokens (`--background`, `--card`, `--foreground`, `--muted`, `--border`, `--primary`, etc.) and is imported from `app/layout.tsx`. Copy [globals.css.example](globals.css.example) or run `shadcn init` if the app has no theme yet.
+
 ## Checklist
 
 - [ ] `NAREV_API_KEY` and provider keys are server-only (no `NEXT_PUBLIC_` prefix)
@@ -121,3 +123,4 @@ Add `@ai-billing/nextjs` components — see [ui-components.md](ui-components.md)
 - [ ] Tags include the destination customer key (`userId` for Polar with default config)
 - [ ] Polar sandbox customer exists for the test `userId`
 - [ ] Usage dashboard receives the same `userId` as billing tags
+- [ ] `app/globals.css` defines shadcn-like CSS variables and is imported in root layout

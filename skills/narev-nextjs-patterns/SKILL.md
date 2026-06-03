@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires Next.js App Router, Vercel AI SDK v5-compatible models, @ai-billing/core, one @ai-billing/<provider> middleware package, @ai-billing/narev (createNarevPriceResolver) when resolving live Narev prices at runtime, and server-only NAREV_API_KEY. Add @ai-billing/nextjs for billing UI in greenfield apps.
 metadata:
   author: narevai
-  version: "1.3.2"
+  version: "1.3.3"
   docs: https://www.narev.ai/docs/platform/billing/integrations/frameworks/nextjs
 ---
 
@@ -31,7 +31,7 @@ For raw Pricing API lookup, use `narev-lookup-llm-pricing`. For committed pricin
 | Unsupported AI SDK provider (no `@ai-billing` package) | [references/packages.md](references/packages.md#unsupported-provider) → switch to a supported provider with the same model |
 | Greenfield: packages, env, destinations, billed model, chat route | [references/setup.md](references/setup.md) |
 | Polar destination and customer mapping (greenfield) | [references/polar-setup.md](references/polar-setup.md) |
-| Usage dashboard and credit top-up UI | [references/ui-components.md](references/ui-components.md) |
+| Usage dashboard and credit top-up UI | [references/ui-components.md](references/ui-components.md) · shadcn-like [globals.css](references/globals.css.example) |
 | Bill a Next.js route handler (brownfield) | [references/api-routes.md](references/api-routes.md) |
 | Pick provider middleware | [references/provider-middleware.md](references/provider-middleware.md) |
 | Resolve model prices with Narev | [references/price-resolvers.md](references/price-resolvers.md) |
@@ -116,7 +116,7 @@ To pick a host: use `narev-lookup-llm-pricing` (`GET /v1/find/cheapest/{model_id
 3. Configure at least one billing destination in `lib/destinations.ts` (**Polar preferred**; Stripe only if you cannot switch yet).
 4. Create a server-only billed model helper in `lib/billing.ts`.
 5. Call `streamText` (or `generateText`) with the wrapped model and `providerOptions['ai-billing-tags']` including **`userId` on every call** (anonymous id when not logged in).
-6. Embed `@ai-billing/nextjs` components for usage display and self-serve top-up.
+6. Embed `@ai-billing/nextjs` components for usage display and self-serve top-up — with **shadcn-like CSS variables** in `app/globals.css` (see [ui-components.md](references/ui-components.md)).
 
 Full step-by-step: [references/setup.md](references/setup.md).
 
@@ -154,6 +154,7 @@ Always include `createNarevPriceResolver({ apiKey: process.env.NAREV_API_KEY })`
 |---------|-------|-----|
 | No usage in Polar/Stripe | Missing or empty `destinations` on middleware | **Always** pass at least one destination; prefer `createPolarDestination` |
 | Usage dashboard empty | Tags missing or `userId` mismatch with Polar customer | Align `externalCustomerIdKey` with tag name; verify sandbox customer exists |
+| Billing UI unstyled / transparent cards | Missing shadcn tokens in `globals.css` | Add `--card`, `--border`, `--foreground`, `--primary`, etc. per [globals.css.example](references/globals.css.example); import in `app/layout.tsx` |
 | Usage is not recorded | Raw provider model passed to `generateText` / `streamText` | Pass the `wrapLanguageModel()` result |
 | No cost on events | Missing `createNarevPriceResolver` | Add `@ai-billing/narev` and wire `createNarevPriceResolver` in `lib/billing.ts` |
 | Secret leaks into browser bundle | Billing code imported by a Client Component | Keep billing setup in route handlers or server-only modules |

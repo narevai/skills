@@ -46,7 +46,7 @@ The `userId` value must correspond to an existing Polar customer for paid attrib
 
 ## UI Components
 
-`CreditUsagePolar` and `CreditTopUpPolar` from `@ai-billing/nextjs` read Polar state for the same `userId`. See [ui-components.md](ui-components.md).
+`CreditUsagePolar` and `CreditTopUpPolar` from `@ai-billing/nextjs` read Polar state for the same `userId`. See [ui-components.md](ui-components.md) (includes required shadcn-like `globals.css`).
 
 ## Production
 

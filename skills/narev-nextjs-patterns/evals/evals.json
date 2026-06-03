@@ -39,7 +39,9 @@
         "Imports CreditUsagePolar and CreditTopUpPolar from @ai-billing/nextjs",
         "Passes userId prop to both components",
         "Does not import lib/billing.ts or billing middleware in the client component",
-        "Derives userId from auth session or server component props rather than hardcoded demo values in production code"
+        "Derives userId from auth session or server component props rather than hardcoded demo values in production code",
+        "Ensures app/globals.css defines shadcn-like CSS variables (--card, --border, --foreground, --primary, etc.) or references globals.css.example",
+        "Imports globals.css from app/layout.tsx when adding or fixing billing UI styling"
       ]
     },
     {
